@@ -56,6 +56,8 @@ my $B = qr/(?:(?<![A-Za-z0-9])|(?<=\\[tnr]))/;
 
 sub rebrand {
   local $_ = shift;
+  # The icon font keeps its family name: shield quoted 'omarchy' on font lines.
+  s{^(.*(?:iconFont|fontFamily|font\.family|font-family).*)$}{ $1 =~ s/(["'])omarchy\1/$1\x00FONT\x00$1/gr }gme;
   s{
     ( https?://[^\s"'`)<>\]]+               # URLs: credit/upstream links
     | (?:[\w-]+\.)*omarchy\.org\b            # omarchy.org hosts
@@ -92,6 +94,7 @@ sub rebrand {
     : $& =~ /^Omarchy/ ? 'codeswotOS'
     : 'codeswot'
   }gex;
+  s/\x00FONT\x00/omarchy/g;
   return $_;
 }
 
