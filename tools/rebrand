@@ -61,8 +61,9 @@ sub rebrand {
     | (?:[\w-]+\.)*omarchy\.org\b            # omarchy.org hosts
     | \[omarchy\]                            # pacman repo section
     | (?:basecamp|omacom(?:-io)?)/omarchy[\w.-]*   # upstream repo slugs
-    | \b(?:org|com|manifest|candidateManifest|spoofedAuth)(?:\\?\.)omarchy\b(?![-/])
-                                             # app ids, manifest keys
+    | (?<!hypr\.)(?<=\w\.)omarchy\b(?![-/])       # .omarchy properties: manifest api, app ids
+    | (?<=\w\\\.)omarchy\b(?![-/])                # same, regex-escaped
+    | ${B}omarchy\.\*                             # the omarchy.* id namespace
     | ${B}omarchy\.(?!$ext|current\b)[a-z][\w-]*
     | ${B}omarchy\\\.(?!$ext)(?:[a-z][\w-]*)?   # same, regex-escaped
                                              # shell plugin / menu ids
