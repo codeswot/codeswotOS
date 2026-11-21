@@ -50,7 +50,7 @@ sub rename_dash {
 }
 
 # File extensions: omarchy.<ext> is a file name, not a plugin id.
-my $ext = qr/(?:conf|sh|toml|lua|jsonc?|desktop|plymouth|script|hook|service|png|jpe?g|webp|svg|md|txt|ini|log|lock)\b/;
+my $ext = qr/(?:conf|sh|toml|lua|jsonc?|desktop|plymouth|script|hook|service|png|jpe?g|webp|svg|md|txt|ini|ya?ml)\b/;
 
 sub rebrand {
   local $_ = shift;
@@ -61,7 +61,7 @@ sub rebrand {
     | (?:basecamp|omacom(?:-io)?)/omarchy[\w.-]*   # upstream repo slugs
     | \b(?:org|com|manifest|candidateManifest|spoofedAuth|value)(?:\\?\.)omarchy\b(?![-/])
                                              # app ids, manifest keys
-    | \bomarchy\.(?=[a-z][\w-]*(?:["'\s,;)\]\}:]|$))(?!$ext)[a-z][\w-]*
+    | \bomarchy\.(?!$ext|current\b)[a-z][\w-]*
     | \bomarchy\\\.(?!$ext)(?:[a-z][\w-]*)?   # same, regex-escaped
                                              # shell plugin / menu ids
     | \bomarchy\.(?=["'`])                   # first-party plugin id prefix
