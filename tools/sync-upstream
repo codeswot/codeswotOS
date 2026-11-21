@@ -1,0 +1,48 @@
+#!/bin/bash
+# Bring an Omarchy release into codeswotOS.
+#
+#   tools/sync-upstream v4.1.0
+#
+# Fetches the release, rebrands the diff between the recorded base and the
+# release with tools/rebrand, and applies it with a 3-way merge. Conflicts are
+# left in the working tree for review; nothing is committed. Record the new
+# base in UPSTREAM once the merge is committed.
+
+set -euo pipefail
+
+ROOT=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)
+cd "$ROOT"
+
+target=${1:?usage: tools/sync-upstream <omarchy-tag>}
+base=$(sed -n 's/^tag=//p' UPSTREAM)
+
+if [[ -n $(git status --porcelain) ]]; then
+  echo "sync-upstream: working tree is not clean" >&2
+  exit 1
+fi
+
+git remote get-url upstream >/dev/null 2>&1 ||
+  git remote add upstream https://github.com/basecamp/omarchy.git
+
+# Shallow fetches keep the repo small; the base and target are all we diff.
+git fetch --depth=1 --no-tags upstream "tag $base" "tag $target"
+
+patch=$(mktemp)
+trap 'rm -f "$patch"' EXIT
+
+git diff --binary --find-renames "$base" "$target" | tools/rebrand stream "$ROOT" >"$patch"
+
+if [[ ! -s $patch ]]; then
+  echo "sync-upstream: $base and $target are identical"
+  exit 0
+fi
+
+git diff --stat "$base" "$target" | tail -1
+if git apply --3way --index "$patch"; then
+  echo "sync-upstream: applied $base..$target cleanly"
+else
+  echo "sync-upstream: applied with conflicts; resolve them, then commit" >&2
+fi
+
+echo "sync-upstream: review new names with: tools/rebrand check . | grep -v '^./test/'"
+echo "sync-upstream: after committing, set tag=$target and commit=$(git rev-parse "$target^{commit}") in UPSTREAM"
