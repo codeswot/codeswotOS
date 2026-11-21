@@ -354,7 +354,7 @@ rm "$test_home/.local/state/codeswot/current/theme/hermes.yaml"
 if run_hook --activate 2>"$test_tmp/stderr"; then
   fail "--activate fails when no theme has been selected"
 fi
-grep -q 'Select an codeswotOS theme' "$test_tmp/stderr" || fail "a missing theme is reported"
+grep -q 'Select a codeswotOS theme' "$test_tmp/stderr" || fail "a missing theme is reported"
 pass "--activate fails without a current theme to render the skin from"
 
 reset_home --set-up

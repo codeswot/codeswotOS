@@ -213,7 +213,7 @@ run_as_user_session() {
     "$@"
 }
 
-# Run an codeswotOS command as the user with the package-backed paths, without
+# Run a codeswotOS command as the user with the package-backed paths, without
 # assuming a live session. Extra NAME=VALUE args extend the environment.
 run_as_user_omarchy() {
   run_as_user env \

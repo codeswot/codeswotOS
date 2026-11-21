@@ -33,7 +33,7 @@ case "${1:-}" in
     mkdir -p "$lock_dir" 2>/dev/null || true
     exec {CODESWOT_UPDATE_LOCK_FD}>"$lock_path"
     if ! flock -n "$CODESWOT_UPDATE_LOCK_FD"; then
-      echo "An codeswotOS update is already running."
+      echo "A codeswotOS update is already running."
       exit 1
     fi
 

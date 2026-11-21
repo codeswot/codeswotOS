@@ -59,7 +59,7 @@ if [[ ! -f $HERMES_SOURCE_PATH ]]; then
 
   if [[ ! -s $HERMES_THEME_NAME_PATH ]]; then
     echo "Hermes skin source missing: $HERMES_SOURCE_PATH" >&2
-    echo "Select an codeswotOS theme first." >&2
+    echo "Select a codeswotOS theme first." >&2
     exit 1
   fi
 

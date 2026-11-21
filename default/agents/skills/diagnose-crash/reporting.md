@@ -17,7 +17,7 @@ codeswotOS's sphere of control is roughly:
 - its install and migration scripts
 - how it packages and configures what it installs
 
-A crash in a program codeswotOS merely installs is **not** an codeswotOS bug unless
+A crash in a program codeswotOS merely installs is **not** a codeswotOS bug unless
 codeswotOS's own packaging or configuration is implicated.
 
 If it is not codeswotOS's, say so and stop. Suggesting the right upstream project is

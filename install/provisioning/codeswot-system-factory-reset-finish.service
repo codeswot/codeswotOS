@@ -1,4 +1,4 @@
-# Finishes an codeswot-system-factory-reset reset on the first boot after it: drops
+# Finishes a codeswot-system-factory-reset reset on the first boot after it: drops
 # the previous root, recreates @home/@log, and scrubs state. Ordered before
 # home.mount/var-log.mount so those subvolumes can be deleted and recreated
 # while unmounted. Armed by /var/lib/codeswot/provisioning/wipe-pending; installed to

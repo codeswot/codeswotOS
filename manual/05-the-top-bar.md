@@ -6,9 +6,9 @@ It's also the one piece of the desktop that's always on screen, so it's worth kn
 
 ## What's on it by default
 
-The bar has three sections. On the left sits the codeswotOS logo (the menu launcher) and the workspace indicators. In the center you get the status indicators, the clock, the keyboard layout, the weather, and an codeswotOS update badge. On the right: the system tray, agents, bluetooth, network, audio, display, and power.
+The bar has three sections. On the left sits the codeswotOS logo (the menu launcher) and the workspace indicators. In the center you get the status indicators, the clock, the keyboard layout, the weather, and a codeswotOS update badge. On the right: the system tray, agents, bluetooth, network, audio, display, and power.
 
-A few of those only show up when they have something to say. The keyboard layout appears only if you've configured more than one layout. The update badge appears only when there's an codeswotOS update waiting. And the agents icon appears the first time codeswotOS finds AI coding usage on the machine (see [AI](17-ai.md)).
+A few of those only show up when they have something to say. The keyboard layout appears only if you've configured more than one layout. The update badge appears only when there's a codeswotOS update waiting. And the agents icon appears the first time codeswotOS finds AI coding usage on the machine (see [AI](17-ai.md)).
 
 ## Clicking around
 

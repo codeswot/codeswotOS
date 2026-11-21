@@ -37,7 +37,7 @@ done
 if [[ ! -f $PI_SOURCE_PATH ]]; then
   if (( PI_ACTIVATE == 1 )); then
     echo "Pi theme source missing: $PI_SOURCE_PATH" >&2
-    echo "Run codeswot-theme-refresh after selecting an codeswotOS theme." >&2
+    echo "Run codeswot-theme-refresh after selecting a codeswotOS theme." >&2
     exit 1
   fi
 

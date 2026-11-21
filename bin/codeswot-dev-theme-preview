@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# codeswot:summary=Preview an codeswotOS theme palette in the terminal
+# codeswot:summary=Preview a codeswotOS theme palette in the terminal
 # codeswot:args=[theme-name|theme-dir|colors.toml] [--no-color] [--no-osc|--osc]
 # codeswot:examples=codeswot dev theme-preview | codeswot dev theme-preview tokyo-night | codeswot dev theme-preview themes/gruvbox/colors.toml --no-color --no-osc
 

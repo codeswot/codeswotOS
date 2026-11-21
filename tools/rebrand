@@ -96,6 +96,8 @@ sub rebrand {
     : 'codeswot'
   }gex;
   s/\x00FONT\x00/omarchy/g;
+  # "an Omarchy" reads "a codeswotOS".
+  s/\b([Aa])n (?=codeswot)/$1 /g;
   return $_;
 }
 

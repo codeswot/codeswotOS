@@ -35,7 +35,7 @@ done
 if [[ ! -f $CLAUDE_SOURCE_PATH ]]; then
   if (( CLAUDE_ACTIVATE == 1 )); then
     echo "Claude Code theme source missing: $CLAUDE_SOURCE_PATH" >&2
-    echo "Run codeswot-theme-refresh after selecting an codeswotOS theme." >&2
+    echo "Run codeswot-theme-refresh after selecting a codeswotOS theme." >&2
     exit 1
   fi
 

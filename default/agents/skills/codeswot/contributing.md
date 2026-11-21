@@ -1,6 +1,6 @@
 # Reporting Issues and Submitting PRs
 
-Read this when the user wants to report an codeswotOS bug, suggest a feature, or
+Read this when the user wants to report a codeswotOS bug, suggest a feature, or
 contribute a fix upstream.
 
 codeswotOS lives at https://github.com/basecamp/omarchy. Route requests to the

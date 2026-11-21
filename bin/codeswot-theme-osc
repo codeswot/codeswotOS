@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# codeswot:summary=Print OSC sequences for an codeswotOS color theme
+# codeswot:summary=Print OSC sequences for a codeswotOS color theme
 # codeswot:hidden=true
 
 theme="${1:-$HOME/.local/state/codeswot/current/theme/colors.toml}"

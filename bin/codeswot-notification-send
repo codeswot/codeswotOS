@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# codeswot:summary=Send an codeswotOS desktop notification
+# codeswot:summary=Send a codeswotOS desktop notification
 # codeswot:args=[--app-name <app-name>] [-g <glyph>] [-u <low|normal|critical>] [-i <icon>] [-t <ms>] [-r <id>] [-p] [--image <path-or-uri>] <headline> [description] [--exec <program> [args...]]
 # codeswot:examples=codeswot notification send "Reminder" "5 minutes are up" -g 󰢌
 

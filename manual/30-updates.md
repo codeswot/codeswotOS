@@ -34,4 +34,4 @@ If you ever have a problem after doing an update, you can rollback your system t
 
 ![bootloader](images/bootloader.webp)
 
-If somehow your configuration files have been corrupted, you can also perform an codeswotOS reinstall using `codeswot reinstall` in the terminal. This will reinstall all the default codeswotOS packages, put you on stable and downgrade any packages that are too new, and reset all the configuration files. Note that all your user config changes to the codeswotOS defaults will be overwritten doing this!
+If somehow your configuration files have been corrupted, you can also perform a codeswotOS reinstall using `codeswot reinstall` in the terminal. This will reinstall all the default codeswotOS packages, put you on stable and downgrade any packages that are too new, and reset all the configuration files. Note that all your user config changes to the codeswotOS defaults will be overwritten doing this!

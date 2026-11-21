@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# codeswot:summary=Apply an codeswotOS theme
+# codeswot:summary=Apply a codeswotOS theme
 # codeswot:args=<theme-name>
 # codeswot:examples=codeswot theme list | codeswot theme set "Tokyo Night"
 

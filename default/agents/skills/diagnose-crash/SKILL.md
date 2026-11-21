@@ -89,7 +89,7 @@ ambiguous, say so rather than assembling confidence out of guesswork.
 reconfigure. The one thing to clean up is your own: delete the core you extracted
 above, which is a copy of the crashed process's memory.
 
-## If it is an codeswotOS bug
+## If it is a codeswotOS bug
 
 Most application crashes are upstream bugs in those applications, not codeswotOS's
 doing. In the minority of cases where the cause really does sit within codeswotOS's

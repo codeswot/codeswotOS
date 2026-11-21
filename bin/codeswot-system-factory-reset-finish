@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# codeswot:summary=First-boot worker that finishes an codeswot-system-factory-reset reset
+# codeswot:summary=First-boot worker that finishes a codeswot-system-factory-reset reset
 # codeswot:requires-sudo=true
 # codeswot:hidden=true
 
@@ -74,7 +74,7 @@ recreate_subvolume() {
   btrfs subvolume create "$TOP_MNT/$name"
 }
 
-# Only for a reset staged by an codeswotOS that still had the degraded path: the
+# Only for a reset staged by a codeswotOS that still had the degraded path: the
 # current system was kept, so accounts and identity are scrubbed in place here
 # instead of arriving pre-scrubbed in the factory clone. Reachable when a
 # degraded reset was staged, the reboot deferred, and this worker updated in

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# codeswot:summary=Set the Plymouth boot theme from an codeswotOS theme
+# codeswot:summary=Set the Plymouth boot theme from a codeswotOS theme
 # codeswot:args=<theme-name>
 # codeswot:requires-sudo=true
 

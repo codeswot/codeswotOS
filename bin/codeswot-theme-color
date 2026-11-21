@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# codeswot:summary=Resolve semantic colors from an codeswotOS theme colors.toml
+# codeswot:summary=Resolve semantic colors from a codeswotOS theme colors.toml
 # codeswot:args=[--file <colors.toml>] (--all | --raw | <key> [fallback])
 # codeswot:hidden=true
 
