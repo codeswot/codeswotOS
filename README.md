@@ -1,14 +1,27 @@
 # codeswotOS
 
-codeswotOS is a beautiful, modern & opinionated Linux distribution by DHH.
+codeswotOS is Mubarak Ibrahim's personal Arch Linux distribution: Hyprland,
+the Quickshell desktop, and the {C}odeswot look, delivered as pacman packages
+with snapshot-protected updates.
 
-Read more at [omarchy.org](https://omarchy.org).
+It is a hard fork of [Omarchy](https://github.com/basecamp/omarchy) by David
+Heinemeier Hansson and contributors, based on Omarchy v4.0.6 (see
+[`UPSTREAM`](UPSTREAM)). The original MIT license and copyright are kept in
+[`LICENSE`](LICENSE).
+
+## Working on codeswotOS
+
+- `tools/rebrand` converts Omarchy trees and patches to codeswotOS names. Its
+  rules, and the reasons some Omarchy names are kept on purpose, are at the
+  top of the script.
+- `tools/sync-upstream <tag>` brings a newer Omarchy release in as a
+  rebranded 3-way merge.
+- `./test/all` runs the CLI and shell test suites.
 
 ## The codeswotOS Manual
 
-The manual lives in [`manual/`](manual/), which is its authoritative source. It's
-mirrored to [learn.omacom.io](https://learn.omacom.io/2/the-omarchy-manual), where
-its screenshots are also hosted.
+The manual lives in [`manual/`](manual/). It started as the Omarchy manual and
+still describes Omarchy behavior in places.
 
 - [Welcome to codeswotOS!](manual/01-welcome-to-codeswot.md)
 
@@ -76,4 +89,5 @@ its screenshots are also hosted.
 
 ## License
 
-codeswotOS is released under the [MIT License](https://opensource.org/licenses/MIT).
+codeswotOS is released under the [MIT License](LICENSE), the same license as
+Omarchy, whose copyright notice it keeps.
