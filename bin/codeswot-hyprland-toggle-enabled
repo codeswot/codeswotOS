@@ -1,0 +1,6 @@
+#!/bin/bash
+
+# codeswot:summary=Check if a Hyprland toggle is currently enabled.
+# codeswot:args=<flag-name>
+
+[[ -f "$HOME/.local/state/codeswot/toggles/hypr/$1.lua" ]]

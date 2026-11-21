@@ -1,0 +1,28 @@
+#!/bin/bash
+
+# codeswot:summary=Edit, set, or reset About branding
+# codeswot:group=branding
+# codeswot:name=about
+# codeswot:args=<image|text|reset>
+# codeswot:examples=codeswot branding about image | codeswot branding about text | codeswot branding about reset
+
+set -euo pipefail
+
+case "${1:-}" in
+image)
+  image=$(codeswot-file-select --title "Pick PNG or SVG for About" --extensions "png svg")
+  if codeswot-transcode-ascii "$image" ~/.config/codeswot/branding/about.txt --width 54 --height 26; then
+    codeswot-launch-about >/dev/null 2>&1
+  fi
+  ;;
+text)
+  codeswot-launch-editor ~/.config/codeswot/branding/about.txt >/dev/null 2>&1 && codeswot-launch-about >/dev/null 2>&1
+  ;;
+reset)
+  cp "$CODESWOT_PATH/icon.txt" ~/.config/codeswot/branding/about.txt && codeswot-launch-about >/dev/null 2>&1
+  ;;
+*)
+  echo "Usage: codeswot-branding-about <image|text|reset>" >&2
+  exit 1
+  ;;
+esac

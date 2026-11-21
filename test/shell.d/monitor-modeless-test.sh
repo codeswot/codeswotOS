@@ -54,7 +54,7 @@ monitors_file="$test_tmp/monitors.json"
 reload_log="$test_tmp/reload.log"
 recovered="$test_tmp/recovered.json"
 events="$test_tmp/events"
-modeless_lock="$test_tmp/omarchy-monitor-modeless.lock"
+modeless_lock="$test_tmp/codeswot-monitor-modeless.lock"
 hyprctl_fail="$test_tmp/hyprctl-fails"
 
 # The monitor list lives in a file so a reload can "fix" it mid-run.
@@ -63,42 +63,42 @@ cat >"$fake_bin/hyprctl" <<'SH'
 
 # Mirrors are absent from plain `monitors`, so the helper must ask for `all`.
 if [[ ${1:-} == "monitors" && ${2:-} == "all" && ${3:-} == "-j" ]]; then
-  [[ -f $OMARCHY_TEST_HYPRCTL_FAIL_FLAG ]] && exit 4
-  cat "$OMARCHY_TEST_MONITORS_FILE"
+  [[ -f $CODESWOT_TEST_HYPRCTL_FAIL_FLAG ]] && exit 4
+  cat "$CODESWOT_TEST_MONITORS_FILE"
 elif [[ ${1:-} == "reload" ]]; then
-  printf 'reload\n' >>"$OMARCHY_TEST_RELOAD_LOG"
-  [[ -f $OMARCHY_TEST_RECOVERED_MONITORS ]] &&
-    cp "$OMARCHY_TEST_RECOVERED_MONITORS" "$OMARCHY_TEST_MONITORS_FILE"
+  printf 'reload\n' >>"$CODESWOT_TEST_RELOAD_LOG"
+  [[ -f $CODESWOT_TEST_RECOVERED_MONITORS ]] &&
+    cp "$CODESWOT_TEST_RECOVERED_MONITORS" "$CODESWOT_TEST_MONITORS_FILE"
 fi
 SH
 
-cat >"$fake_bin/omarchy-hyprland-reload-guard" <<'SH'
+cat >"$fake_bin/codeswot-hyprland-reload-guard" <<'SH'
 #!/bin/bash
 
-[[ ${1:-} == "paused" && ${OMARCHY_TEST_GUARD_PAUSED:-0} == 1 ]]
+[[ ${1:-} == "paused" && ${CODESWOT_TEST_GUARD_PAUSED:-0} == 1 ]]
 SH
 
 cat >"$fake_bin/socat" <<'SH'
 #!/bin/bash
 
-exec cat "$OMARCHY_TEST_EVENTS"
+exec cat "$CODESWOT_TEST_EVENTS"
 SH
 
 # A desktop, so the clamshell half of the watcher stays idle.
-cat >"$fake_bin/omarchy-hw-laptop" <<'SH'
+cat >"$fake_bin/codeswot-hw-laptop" <<'SH'
 #!/bin/bash
 
 exit 1
 SH
 
-cat >"$fake_bin/omarchy-hyprland-monitor-clamshell" <<'SH'
+cat >"$fake_bin/codeswot-hyprland-monitor-clamshell" <<'SH'
 #!/bin/bash
 
 exit 0
 SH
 
 chmod +x "$fake_bin"/*
-ln -s "$ROOT/bin/omarchy-hyprland-monitor-modeless" "$fake_bin/omarchy-hyprland-monitor-modeless"
+ln -s "$ROOT/bin/codeswot-hyprland-monitor-modeless" "$fake_bin/codeswot-hyprland-monitor-modeless"
 
 MODELESS=0
 WORKING=1
@@ -108,9 +108,9 @@ assert_state() {
   local expected="$1" actual=0
 
   printf '%s' "$2" >"$monitors_file"
-  PATH="$fake_bin:$PATH" OMARCHY_TEST_MONITORS_FILE="$monitors_file" \
-  OMARCHY_TEST_HYPRCTL_FAIL_FLAG="$hyprctl_fail" \
-    "$ROOT/bin/omarchy-hyprland-monitor-modeless" || actual=$?
+  PATH="$fake_bin:$PATH" CODESWOT_TEST_MONITORS_FILE="$monitors_file" \
+  CODESWOT_TEST_HYPRCTL_FAIL_FLAG="$hyprctl_fail" \
+    "$ROOT/bin/codeswot-hyprland-monitor-modeless" || actual=$?
 
   (( actual == expected )) || fail "$3" "expected exit $expected, got $actual"
   pass "$3"
@@ -151,9 +151,9 @@ assert_state $UNDETERMINED 'not json' "an unreadable monitor payload cannot say"
 printf '%s' '[{"name":"DP-1","width":0,"height":0,"disabled":false}]' >"$monitors_file"
 touch "$hyprctl_fail"
 unreachable=0
-PATH="$fake_bin:$PATH" OMARCHY_TEST_MONITORS_FILE="$monitors_file" \
-OMARCHY_TEST_HYPRCTL_FAIL_FLAG="$hyprctl_fail" \
-  "$ROOT/bin/omarchy-hyprland-monitor-modeless" || unreachable=$?
+PATH="$fake_bin:$PATH" CODESWOT_TEST_MONITORS_FILE="$monitors_file" \
+CODESWOT_TEST_HYPRCTL_FAIL_FLAG="$hyprctl_fail" \
+  "$ROOT/bin/codeswot-hyprland-monitor-modeless" || unreachable=$?
 rm -f "$hyprctl_fail"
 (( unreachable == UNDETERMINED )) || fail "an unreachable compositor cannot say" "got $unreachable"
 pass "an unreachable compositor cannot say"
@@ -166,13 +166,13 @@ start_watcher() {
   PATH="$fake_bin:$PATH" \
   XDG_RUNTIME_DIR="$test_tmp" \
   HYPRLAND_INSTANCE_SIGNATURE=test \
-  OMARCHY_TEST_EVENTS="$events" \
-  OMARCHY_TEST_MONITORS_FILE="$monitors_file" \
-  OMARCHY_TEST_RELOAD_LOG="$reload_log" \
-  OMARCHY_TEST_RECOVERED_MONITORS="$recovered" \
-  OMARCHY_TEST_GUARD_PAUSED="${1:-0}" \
-  OMARCHY_TEST_HYPRCTL_FAIL_FLAG="$hyprctl_fail" \
-    "$ROOT/bin/omarchy-hyprland-monitor-watch" &
+  CODESWOT_TEST_EVENTS="$events" \
+  CODESWOT_TEST_MONITORS_FILE="$monitors_file" \
+  CODESWOT_TEST_RELOAD_LOG="$reload_log" \
+  CODESWOT_TEST_RECOVERED_MONITORS="$recovered" \
+  CODESWOT_TEST_GUARD_PAUSED="${1:-0}" \
+  CODESWOT_TEST_HYPRCTL_FAIL_FLAG="$hyprctl_fail" \
+    "$ROOT/bin/codeswot-hyprland-monitor-watch" &
   watch_pid=$!
 
   exec {events_fd}>"$events"

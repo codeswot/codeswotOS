@@ -1,0 +1,13 @@
+#!/bin/bash
+
+# codeswot:summary=Launch a floating terminal with the codeswotOS presentation wrapper
+# codeswot:args=<command>
+
+# Export the current theme's gum styling so gum widgets match the active theme
+# even after a theme switch (the inherited environment is captured at login).
+source codeswot-restart-gum
+
+cmd="$*"
+presentation_script="codeswot-show-logo; $cmd; if (( \$? != 130 )); then codeswot-show-done; fi"
+
+exec setsid uwsm-app -- xdg-terminal-exec --app-id=org.omarchy.terminal --title=codeswotOS -e bash -c "$presentation_script"

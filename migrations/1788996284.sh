@@ -17,7 +17,7 @@ done
 
 [[ -f $nvim_provider ]] || exit 0
 
-# Replace only known Omarchy versions, including the June file-backed provider
+# Replace only known codeswotOS versions, including the June file-backed provider
 # and the two earlier proposed fixes. Preserve all user-authored changes.
 provider_hash=$(sha256sum "$nvim_provider")
 case ${provider_hash%% *} in
@@ -27,7 +27,7 @@ case ${provider_hash%% *} in
       exit 0
     fi
     echo "Preserving customized Neovim provider: $nvim_provider"
-    echo "Review remote clipboard settings manually, or use omarchy-nvim-refresh to reset them."
+    echo "Review remote clipboard settings manually, or use codeswot-nvim-refresh to reset them."
     exit 0
     ;;
 esac

@@ -1,0 +1,6 @@
+#!/bin/bash
+# codeswot:summary=Launch emojis
+# codeswot:group=menu
+# codeswot:examples=codeswot menu emoji
+
+codeswot-shell shell toggle omarchy.emojis

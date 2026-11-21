@@ -1,8 +1,8 @@
 echo "Remove leading zero from bar clock date"
 
-config_file="$HOME/.config/omarchy/shell.json"
+config_file="$HOME/.config/codeswot/shell.json"
 
-if [[ -f $config_file ]] && omarchy-cmd-present jq; then
+if [[ -f $config_file ]] && codeswot-cmd-present jq; then
   tmp=$(mktemp)
   jq '
     def update_clock_format:

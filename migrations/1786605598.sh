@@ -10,11 +10,11 @@ echo "Rebuild the initramfs so NVIDIA-only systems shed nouveau's unused GSP fir
 # dropped out. A user-edited omarchy_hooks.conf (pacman leaves the packaged
 # update as a .pacnew) keeps kms and correctly skips the rebuild.
 
-hooks_conf="${OMARCHY_MKINITCPIO_HOOKS_CONF:-/etc/mkinitcpio.conf.d/omarchy_hooks.conf}"
-nvidia_conf="${OMARCHY_MKINITCPIO_NVIDIA_CONF:-/etc/mkinitcpio.conf.d/nvidia.conf}"
-rebuild_marker="${OMARCHY_KMS_REBUILD_MARKER:-/var/lib/omarchy/migrations/1786605598}"
+hooks_conf="${CODESWOT_MKINITCPIO_HOOKS_CONF:-/etc/mkinitcpio.conf.d/omarchy_hooks.conf}"
+nvidia_conf="${CODESWOT_MKINITCPIO_NVIDIA_CONF:-/etc/mkinitcpio.conf.d/nvidia.conf}"
+rebuild_marker="${CODESWOT_KMS_REBUILD_MARKER:-/var/lib/codeswot/migrations/1786605598}"
 
-omarchy-cmd-present limine-mkinitcpio || exit 0
+codeswot-cmd-present limine-mkinitcpio || exit 0
 [[ -f $hooks_conf && -f $nvidia_conf ]] || exit 0
 
 # The rebuild is machine-wide, but migrations run once per user: a marker

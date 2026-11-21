@@ -1,7 +1,7 @@
-echo "Link Omarchy agent skills into Hermes skill directories"
+echo "Link codeswotOS agent skills into Hermes skill directories"
 
-OMARCHY_PATH="${OMARCHY_PATH:-/usr/share/omarchy}"
-skills_source="$OMARCHY_PATH/default/agents/skills"
+CODESWOT_PATH="${CODESWOT_PATH:-/usr/share/codeswot}"
+skills_source="$CODESWOT_PATH/default/agents/skills"
 
 [[ -d $skills_source ]] || exit 0
 

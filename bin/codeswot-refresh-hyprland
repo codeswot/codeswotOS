@@ -1,0 +1,14 @@
+#!/bin/bash
+
+# codeswot:summary=Overwrite all the user Hyprland Lua configs in ~/.config/hypr with the codeswotOS defaults.
+
+codeswot-refresh-config hypr/.luarc.json
+codeswot-refresh-config hypr/autostart.lua
+codeswot-refresh-config hypr/bindings.lua
+codeswot-refresh-config hypr/input.lua
+codeswot-refresh-config hypr/looknfeel.lua
+codeswot-refresh-config hypr/hyprland.lua
+codeswot-refresh-config hypr/monitors.lua
+
+mkdir -p ~/.local/state/codeswot/toggles/hypr
+cp "$CODESWOT_PATH/default/hypr/toggles/flags.lua" ~/.local/state/codeswot/toggles/hypr/

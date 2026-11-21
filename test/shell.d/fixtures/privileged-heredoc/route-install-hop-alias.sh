@@ -1,6 +1,6 @@
-tmp=/tmp/omarchy-generated
+tmp=/tmp/codeswot-generated
 copy=$tmp
 cat >"$tmp" <<EOF
-command=$HOME/.local/share/omarchy/bin/example
+command=$HOME/.local/share/codeswot/bin/example
 EOF
-sudo install -m644 "$copy" /etc/omarchy/example.conf
+sudo install -m644 "$copy" /etc/codeswot/example.conf

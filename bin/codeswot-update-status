@@ -1,0 +1,12 @@
+#!/bin/bash
+
+# codeswot:summary=Refresh the shell update status
+# codeswot:hidden=true
+
+set -e
+
+if codeswot-update-available >/dev/null; then
+  codeswot-shell -q omarchy.system-update refresh
+else
+  codeswot-shell -q omarchy.system-update clear
+fi

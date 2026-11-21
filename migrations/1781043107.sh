@@ -1,9 +1,9 @@
-echo "Move current Omarchy theme state to ~/.local/state"
+echo "Move current codeswotOS theme state to ~/.local/state"
 
-legacy_current_dir="$HOME/.config/omarchy/current"
-current_state_dir="$HOME/.local/state/omarchy/current"
+legacy_current_dir="$HOME/.config/codeswot/current"
+current_state_dir="$HOME/.local/state/codeswot/current"
 
-mkdir -p "$HOME/.local/state/omarchy"
+mkdir -p "$HOME/.local/state/codeswot"
 
 if [[ -e $legacy_current_dir || -L $legacy_current_dir ]]; then
   if [[ ! -e $current_state_dir && ! -L $current_state_dir ]]; then
@@ -46,9 +46,9 @@ replace_current_path() {
 
   [[ -f $file ]] || return 0
 
-  replace_literal_in_file "$file" "$HOME/.config/omarchy/current" "$HOME/.local/state/omarchy/current"
-  replace_literal_in_file "$file" "~/.config/omarchy/current" "~/.local/state/omarchy/current"
-  replace_literal_in_file "$file" "../omarchy/current" "../../.local/state/omarchy/current"
+  replace_literal_in_file "$file" "$HOME/.config/codeswot/current" "$HOME/.local/state/codeswot/current"
+  replace_literal_in_file "$file" "~/.config/codeswot/current" "~/.local/state/codeswot/current"
+  replace_literal_in_file "$file" "../codeswot/current" "../../.local/state/codeswot/current"
 }
 
 ensure_hyprland_state_path() {
@@ -98,10 +98,10 @@ relink_current_symlink() {
       suffix=${target#"$legacy_current_dir"/}
       ln -sfn "$current_state_dir/$suffix" "$link"
       ;;
-    "~/.config/omarchy/current/"*)
+    "~/.config/codeswot/current/"*)
       # The filesystem never expands a literal ~ in a symlink target, so keep
       # $HOME out of the quoted string and let the shell expand it instead.
-      suffix=${target#"~/.config/omarchy/current/"}
+      suffix=${target#"~/.config/codeswot/current/"}
       ln -sfn "$current_state_dir/$suffix" "$link"
       ;;
   esac
@@ -109,10 +109,10 @@ relink_current_symlink() {
 
 for link in \
   "$HOME/.config/btop/themes/current.theme" \
-  "$HOME/.config/helix/themes/omarchy.toml" \
-  "$HOME/.vscode/extensions/omarchy-theme/themes/omarchy-color-theme.json" \
-  "$HOME/.vscode-insiders/extensions/omarchy-theme/themes/omarchy-color-theme.json" \
-  "$HOME/.vscode-oss/extensions/omarchy-theme/themes/omarchy-color-theme.json" \
-  "$HOME/.cursor/extensions/omarchy-theme/themes/omarchy-color-theme.json"; do
+  "$HOME/.config/helix/themes/codeswot.toml" \
+  "$HOME/.vscode/extensions/codeswot-theme/themes/codeswot-color-theme.json" \
+  "$HOME/.vscode-insiders/extensions/codeswot-theme/themes/codeswot-color-theme.json" \
+  "$HOME/.vscode-oss/extensions/codeswot-theme/themes/codeswot-color-theme.json" \
+  "$HOME/.cursor/extensions/codeswot-theme/themes/codeswot-color-theme.json"; do
   relink_current_symlink "$link"
 done

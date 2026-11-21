@@ -1,0 +1,7 @@
+#!/bin/bash
+
+# codeswot:summary=Returns true when clamshell mode is active
+# codeswot:hidden=true
+
+# Clamshell = lid closed while driving one or more external monitors.
+codeswot-hw-laptop-closed && codeswot-hw-external-monitors

@@ -36,11 +36,11 @@ require_command jq
 require_command python3
 
 shell_ipc() {
-  OMARCHY_PATH="$test_root" "$ROOT/bin/omarchy-shell" "$@"
+  CODESWOT_PATH="$test_root" "$ROOT/bin/codeswot-shell" "$@"
 }
 
 shell_ipc_quiet() {
-  OMARCHY_PATH="$test_root" "$ROOT/bin/omarchy-shell" -q "$@"
+  CODESWOT_PATH="$test_root" "$ROOT/bin/codeswot-shell" -q "$@"
 }
 
 fail_with_log() {
@@ -51,7 +51,7 @@ fail_with_log() {
 }
 
 TMPDIR=$(mktemp -d)
-test_root="$TMPDIR/omarchy"
+test_root="$TMPDIR/codeswot"
 test_home="$TMPDIR/home"
 stub_bin="$TMPDIR/bin"
 screenshot_dir="$TMPDIR/screenshots"
@@ -62,12 +62,12 @@ cp -a "$ROOT/shell" "$test_root/shell"
 ln -s "$ROOT/config" "$test_root/config"
 ln -s "$ROOT/bin" "$test_root/bin"
 
-cat >"$stub_bin/omarchy-update-available" <<'SH'
+cat >"$stub_bin/codeswot-update-available" <<'SH'
 #!/bin/bash
-echo "Omarchy update available (test)"
+echo "codeswotOS update available (test)"
 exit 0
 SH
-chmod +x "$stub_bin/omarchy-update-available"
+chmod +x "$stub_bin/codeswot-update-available"
 
 cat >"$stub_bin/curl" <<'SH'
 #!/bin/bash
@@ -86,7 +86,7 @@ esac
 SH
 chmod +x "$stub_bin/curl"
 
-OMARCHY_PATH="$test_root" \
+CODESWOT_PATH="$test_root" \
 HOME="$test_home" \
 XDG_CONFIG_HOME="$test_home/.config" \
 XDG_CACHE_HOME="$test_home/.cache" \
@@ -119,11 +119,11 @@ jq -e '
 }
 
 screenshot=$(
-  OMARCHY_PATH="$test_root" \
-  OMARCHY_SCREENSHOT_DIR="$screenshot_dir" \
+  CODESWOT_PATH="$test_root" \
+  CODESWOT_SCREENSHOT_DIR="$screenshot_dir" \
   HOME="$test_home" \
   PATH="$stub_bin:$ROOT/bin:$PATH" \
-    "$ROOT/bin/omarchy" capture screenshot fullscreen save 2>"$screenshot_err" | tail -n 1
+    "$ROOT/bin/codeswot" capture screenshot fullscreen save 2>"$screenshot_err" | tail -n 1
 )
 
 [[ -n $screenshot && -f $screenshot ]] || fail_with_log "fullscreen screenshot was captured"

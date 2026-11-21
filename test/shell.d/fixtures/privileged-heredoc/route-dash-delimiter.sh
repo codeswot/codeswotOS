@@ -1,5 +1,5 @@
 if true; then
-  cat <<-EOF | sudo tee /etc/omarchy/indented.conf >/dev/null
-	helper=$HOME/.local/share/omarchy/bin/omarchy-agent
+  cat <<-EOF | sudo tee /etc/codeswot/indented.conf >/dev/null
+	helper=$HOME/.local/share/codeswot/bin/codeswot-agent
 	EOF
 fi

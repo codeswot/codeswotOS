@@ -1,0 +1,14 @@
+#!/bin/bash
+
+# codeswot:summary=Open the codeswotOS background switcher
+# codeswot:group=theme
+# codeswot:name=bg-switcher
+# codeswot:aliases=codeswot background
+
+theme_name=$(cat "$HOME/.local/state/codeswot/current/theme.name" 2>/dev/null)
+current_background=$(readlink -f "$HOME/.local/state/codeswot/current/background" 2>/dev/null)
+
+codeswot-menu-images \
+  --selected "$current_background" \
+  "$HOME/.local/state/codeswot/current/theme/backgrounds" \
+  "$HOME/.config/codeswot/backgrounds/$theme_name"

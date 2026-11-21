@@ -1,5 +1,5 @@
 {
-  "name": "Omarchy",
+  "name": "codeswotOS",
   "base": "{{ theme_type }}",
   "overrides": {
     "claude": "{{ accent }}",

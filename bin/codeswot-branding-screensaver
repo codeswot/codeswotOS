@@ -1,0 +1,28 @@
+#!/bin/bash
+
+# codeswot:summary=Edit, set, or reset screensaver branding
+# codeswot:group=branding
+# codeswot:name=screensaver
+# codeswot:args=<image|text|reset>
+# codeswot:examples=codeswot branding screensaver image | codeswot branding screensaver text | codeswot branding screensaver reset
+
+set -euo pipefail
+
+case "${1:-}" in
+image)
+  image=$(codeswot-file-select --title "Pick PNG or SVG for screensaver" --extensions "png svg")
+  if codeswot-transcode-ascii "$image" ~/.config/codeswot/branding/screensaver.txt; then
+    codeswot-launch-screensaver force >/dev/null 2>&1
+  fi
+  ;;
+text)
+  codeswot-launch-editor ~/.config/codeswot/branding/screensaver.txt >/dev/null 2>&1 && codeswot-launch-screensaver force >/dev/null 2>&1
+  ;;
+reset)
+  cp "$CODESWOT_PATH/logo.txt" ~/.config/codeswot/branding/screensaver.txt && codeswot-launch-screensaver force >/dev/null 2>&1
+  ;;
+*)
+  echo "Usage: codeswot-branding-screensaver <image|text|reset>" >&2
+  exit 1
+  ;;
+esac

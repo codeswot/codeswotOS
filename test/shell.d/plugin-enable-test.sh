@@ -9,19 +9,19 @@ trap 'rm -rf "$TMPDIR"' EXIT
 mkdir -p "$TMPDIR/home" "$TMPDIR/bin"
 calls="$TMPDIR/calls"
 
-cat >"$TMPDIR/bin/omarchy-shell" <<'SH'
+cat >"$TMPDIR/bin/codeswot-shell" <<'SH'
 #!/bin/bash
-printf '%s\n' "$*" >>"$OMARCHY_TEST_CALLS"
+printf '%s\n' "$*" >>"$CODESWOT_TEST_CALLS"
 printf 'ok\n'
 SH
-chmod +x "$TMPDIR/bin/omarchy-shell"
+chmod +x "$TMPDIR/bin/codeswot-shell"
 
 run_enable() {
   HOME="$TMPDIR/home" \
-    OMARCHY_PATH="$ROOT" \
-    OMARCHY_TEST_CALLS="$calls" \
+    CODESWOT_PATH="$ROOT" \
+    CODESWOT_TEST_CALLS="$calls" \
     PATH="$TMPDIR/bin:$ROOT/bin:$PATH" \
-    omarchy-plugin-enable "$@"
+    codeswot-plugin-enable "$@"
 }
 
 run_enable omarchy.active-window --section right >/dev/null

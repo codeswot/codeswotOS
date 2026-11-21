@@ -1,6 +1,6 @@
-DROP_IN=/etc/systemd/system/omarchy-agent.service.d/override.conf
+DROP_IN=/etc/systemd/system/codeswot-agent.service.d/override.conf
 
 cat <<EOF | sudo tee "$DROP_IN" >/dev/null
 [Service]
-ExecStart=$OMARCHY_PATH/bin/omarchy-agent
+ExecStart=$CODESWOT_PATH/bin/codeswot-agent
 EOF

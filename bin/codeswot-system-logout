@@ -1,0 +1,13 @@
+#!/bin/bash
+
+# codeswot:summary=Log out after closing application windows
+# codeswot:examples=codeswot logout | codeswot system logout
+# codeswot:aliases=codeswot logout
+
+nohup bash -c "sleep 2 && uwsm stop" >/dev/null 2>&1 &
+
+codeswot-osd -i logout -m "Logging out" -d 5000
+
+# Now close all windows
+codeswot-hyprland-window-close-all
+sleep 1 # Allow apps like Chrome to shutdown correctly

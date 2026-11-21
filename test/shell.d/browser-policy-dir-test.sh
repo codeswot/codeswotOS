@@ -7,8 +7,8 @@ source "$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)/base-test.sh"
 test_tmp=$(mktemp -d)
 trap 'rm -rf "$test_tmp"' EXIT
 
-export OMARCHY_PATH="$ROOT"
-export OMARCHY_PROVISIONING_DIR="$test_tmp/provisioning"
+export CODESWOT_PATH="$ROOT"
+export CODESWOT_PROVISIONING_DIR="$test_tmp/provisioning"
 
 source "$ROOT/install/helpers/browser-policy.sh"
 
@@ -103,7 +103,7 @@ browser_policy_setup_dir "$planted_dir"
 [[ -d $planted_dir ]] || fail "policy setup leaves the managed directory in place"
 mode=$(stat -c '%a' "$planted_dir")
 [[ $mode == "755" ]] || fail "policy setup leaves the managed directory 0755" "mode=$mode"
-[[ $(jq '.DefaultBrowserSettingEnabled' "$planted_dir/omarchy.json") == "false" ]] ||
+[[ $(jq '.DefaultBrowserSettingEnabled' "$planted_dir/codeswot.json") == "false" ]] ||
   fail "policy setup hides the default browser setting"
 pass "policy setup drops non-root files and non-empty subdirectories"
 
@@ -233,14 +233,14 @@ for theme in "$ROOT"/themes/*/chromium.theme; do
 done
 pass "shipped chromium.theme files parse as RGB triples"
 
-grep -F 'browser_policy_theme_hex' "$ROOT/bin/omarchy-theme-set-browser" >/dev/null ||
-  fail "omarchy-theme-set-browser parses chromium.theme through browser_policy_theme_hex"
-grep -F 'omarchy-theme-set-browser-policy' "$ROOT/bin/omarchy-theme-set-browser" >/dev/null ||
-  fail "omarchy-theme-set-browser writes colour through omarchy-theme-set-browser-policy"
-if grep -E 'printf.*THEME_RGB_COLOR' "$ROOT/bin/omarchy-theme-set-browser" >/dev/null; then
-  fail "omarchy-theme-set-browser does not hand unvetted theme words to printf"
+grep -F 'browser_policy_theme_hex' "$ROOT/bin/codeswot-theme-set-browser" >/dev/null ||
+  fail "codeswot-theme-set-browser parses chromium.theme through browser_policy_theme_hex"
+grep -F 'codeswot-theme-set-browser-policy' "$ROOT/bin/codeswot-theme-set-browser" >/dev/null ||
+  fail "codeswot-theme-set-browser writes colour through codeswot-theme-set-browser-policy"
+if grep -E 'printf.*THEME_RGB_COLOR' "$ROOT/bin/codeswot-theme-set-browser" >/dev/null; then
+  fail "codeswot-theme-set-browser does not hand unvetted theme words to printf"
 fi
-pass "omarchy-theme-set-browser validates the theme colour"
+pass "codeswot-theme-set-browser validates the theme colour"
 
 fx_policy=$test_tmp/policies.json
 printf '%s\n' '{"policies":{}}' >"$fx_policy"
@@ -277,42 +277,42 @@ fi
 [[ -d $dir_dist/policies.json ]] || fail "Firefox policy install leaves a planted policies.json directory in place"
 pass "Firefox policy install does not write into a planted policies.json directory"
 
-grep -F 'exit "$failed"' "$ROOT/bin/omarchy-theme-set-browser" >/dev/null ||
-  fail "omarchy-theme-set-browser exits non-zero when a policy write fails"
-pass "omarchy-theme-set-browser exits non-zero when a policy write fails"
+grep -F 'exit "$failed"' "$ROOT/bin/codeswot-theme-set-browser" >/dev/null ||
+  fail "codeswot-theme-set-browser exits non-zero when a policy write fails"
+pass "codeswot-theme-set-browser exits non-zero when a policy write fails"
 
 # Bash 5.3 adopts the EXIT trap's last status as the script's exit status, so a
 # handler ending on a false test turns a clean run into a failure and aborts the
-# migration that calls this through omarchy-theme-set-browser.
-policy_cleanup=$(sed -n '/^cleanup() {/,/^}/p' "$ROOT/bin/omarchy-theme-set-browser-policy")
-[[ -n $policy_cleanup ]] || fail "omarchy-theme-set-browser-policy defines an EXIT cleanup handler"
+# migration that calls this through codeswot-theme-set-browser.
+policy_cleanup=$(sed -n '/^cleanup() {/,/^}/p' "$ROOT/bin/codeswot-theme-set-browser-policy")
+[[ -n $policy_cleanup ]] || fail "codeswot-theme-set-browser-policy defines an EXIT cleanup handler"
 eval "$policy_cleanup"
 staged=""
-cleanup || fail "omarchy-theme-set-browser-policy's EXIT trap succeeds with nothing staged"
+cleanup || fail "codeswot-theme-set-browser-policy's EXIT trap succeeds with nothing staged"
 staged=$test_tmp/staged-policy
 : >"$staged"
-cleanup || fail "omarchy-theme-set-browser-policy's EXIT trap succeeds with a staged file"
-[[ ! -e $staged ]] || fail "omarchy-theme-set-browser-policy's EXIT trap removes the staged file"
+cleanup || fail "codeswot-theme-set-browser-policy's EXIT trap succeeds with a staged file"
+[[ ! -e $staged ]] || fail "codeswot-theme-set-browser-policy's EXIT trap removes the staged file"
 unset -f cleanup
-pass "omarchy-theme-set-browser-policy's EXIT trap never leaks a failure status"
+pass "codeswot-theme-set-browser-policy's EXIT trap never leaks a failure status"
 
-grep -F 'omarchy-theme-set-browser || true' "$ROOT/migrations/1787515927.sh" >/dev/null ||
+grep -F 'codeswot-theme-set-browser || true' "$ROOT/migrations/1787515927.sh" >/dev/null ||
   fail "the policy-directory migration hardens Firefox even when the theme refresh fails"
 pass "the policy-directory migration does not abort on a failed theme refresh"
 
 policy_files=(
-  "$ROOT/bin/omarchy-install-browser"
-  "$ROOT/bin/omarchy-provision-owner"
-  "$ROOT/bin/omarchy-theme-set-browser"
-  "$ROOT/bin/omarchy-theme-set-browser-policy"
-  "$ROOT/bin/omarchy-upgrade-to-quattro"
+  "$ROOT/bin/codeswot-install-browser"
+  "$ROOT/bin/codeswot-provision-owner"
+  "$ROOT/bin/codeswot-theme-set-browser"
+  "$ROOT/bin/codeswot-theme-set-browser-policy"
+  "$ROOT/bin/codeswot-upgrade-to-quattro"
   "$ROOT/install/config/theme-system.sh"
   "$ROOT/install/config/browser-policy.sh"
   "$ROOT/install/helpers/browser-policy.sh"
   "$ROOT/migrations/1787515927.sh"
 )
-if grep -nE 'chmod a\+rwx\b|chmod a\+rw\b|chmod a\+w\b|chmod o\+w|chmod ugo\+w|chmod 2775\b|chmod 2777\b|chmod 0777\b|chmod 777\b|install -d -m 0?[27]?777|omarchy-browser-policy' "${policy_files[@]}" >/dev/null; then
-  fail "browser policy setup is not world-writable and does not use omarchy-browser-policy"
+if grep -nE 'chmod a\+rwx\b|chmod a\+rw\b|chmod a\+w\b|chmod o\+w|chmod ugo\+w|chmod 2775\b|chmod 2777\b|chmod 0777\b|chmod 777\b|install -d -m 0?[27]?777|codeswot-browser-policy' "${policy_files[@]}" >/dev/null; then
+  fail "browser policy setup is not world-writable and does not use codeswot-browser-policy"
 fi
 pass "browser policy setup is not world-writable"
 

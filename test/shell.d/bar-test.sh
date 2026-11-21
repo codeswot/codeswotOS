@@ -368,8 +368,8 @@ assert(!bar.customModuleSafeName('../escape'), 'bar rejects path traversal custo
 assertEqual(bar.customModuleType({ id: 'custom', exec: 'date' }), 'command', 'bar infers command custom modules')
 assertEqual(bar.customModuleType({ id: 'custom', source: '~/Custom.qml' }), 'qml', 'bar infers qml custom modules')
 assertEqual(
-  bar.customModulePath({ id: 'local.weather' }, '/home/dhh', '/home/dhh/.config/omarchy'),
-  '/home/dhh/.config/omarchy/bar/modules/local.weather.qml',
+  bar.customModulePath({ id: 'local.weather' }, '/home/dhh', '/home/dhh/.config/codeswot'),
+  '/home/dhh/.config/codeswot/bar/modules/local.weather.qml',
   'bar builds default custom module paths'
 )
 JS
@@ -377,26 +377,26 @@ JS
 put_tmp=$(mktemp -d)
 trap 'rm -rf "$put_tmp"' EXIT
 mkdir -p "$put_tmp/bin"
-ln -s "$ROOT/bin/omarchy-shell-config" "$put_tmp/bin/omarchy-shell-config"
+ln -s "$ROOT/bin/codeswot-shell-config" "$put_tmp/bin/codeswot-shell-config"
 
-cat >"$put_tmp/bin/omarchy-shell" <<'STUB'
+cat >"$put_tmp/bin/codeswot-shell" <<'STUB'
 #!/bin/bash
-case ${OMARCHY_TEST_SHELL_STATE:-ready} in
+case ${CODESWOT_TEST_SHELL_STATE:-ready} in
   missing)
-    echo "omarchy-shell is not running" >&2
+    echo "codeswot-shell is not running" >&2
     exit 1
     ;;
   starting)
-    echo "omarchy-shell is not ready" >&2
+    echo "codeswot-shell is not ready" >&2
     exit 1
     ;;
   crashing)
     # Seen coming up, then gone.
-    if [[ -e $OMARCHY_TEST_SHELL_MARKER ]]; then
-      echo "omarchy-shell is not running" >&2
+    if [[ -e $CODESWOT_TEST_SHELL_MARKER ]]; then
+      echo "codeswot-shell is not running" >&2
     else
-      touch "$OMARCHY_TEST_SHELL_MARKER"
-      echo "omarchy-shell is not ready" >&2
+      touch "$CODESWOT_TEST_SHELL_MARKER"
+      echo "codeswot-shell is not ready" >&2
     fi
     exit 1
     ;;
@@ -411,20 +411,20 @@ case ${OMARCHY_TEST_SHELL_STATE:-ready} in
     ;;
   spawning)
     # Launched, but with no socket to answer on yet.
-    if [[ ! -e $OMARCHY_TEST_SHELL_MARKER ]]; then
-      touch "$OMARCHY_TEST_SHELL_MARKER"
-      echo "omarchy-shell is not running" >&2
+    if [[ ! -e $CODESWOT_TEST_SHELL_MARKER ]]; then
+      touch "$CODESWOT_TEST_SHELL_MARKER"
+      echo "codeswot-shell is not running" >&2
       exit 1
     fi
     ;;
   vanishing)
     # Answers the first ask, then is gone before the fallback lands.
-    if [[ ! -e $OMARCHY_TEST_SHELL_MARKER ]]; then
-      touch "$OMARCHY_TEST_SHELL_MARKER"
+    if [[ ! -e $CODESWOT_TEST_SHELL_MARKER ]]; then
+      touch "$CODESWOT_TEST_SHELL_MARKER"
       echo "could not find target widget omarchy.clock"
       exit 0
     fi
-    echo "omarchy-shell is not running" >&2
+    echo "codeswot-shell is not running" >&2
     exit 1
     ;;
   unsupported)
@@ -434,8 +434,8 @@ case ${OMARCHY_TEST_SHELL_STATE:-ready} in
     ;;
   scanning)
     # Answering IPC, but has not read the plugins yet.
-    if [[ ! -e $OMARCHY_TEST_SHELL_MARKER ]]; then
-      touch "$OMARCHY_TEST_SHELL_MARKER"
+    if [[ ! -e $CODESWOT_TEST_SHELL_MARKER ]]; then
+      touch "$CODESWOT_TEST_SHELL_MARKER"
       echo "not ready"
       exit 0
     fi
@@ -443,63 +443,63 @@ case ${OMARCHY_TEST_SHELL_STATE:-ready} in
 esac
 echo "ok"
 STUB
-chmod +x "$put_tmp/bin/omarchy-shell"
+chmod +x "$put_tmp/bin/codeswot-shell"
 
-put_output=$(PATH="$put_tmp/bin:$ROOT/bin:$PATH" OMARCHY_TEST_SHELL_STATE=missing \
-  OMARCHY_SHELL_ABSENT_ATTEMPTS=2 \
-  "$ROOT/bin/omarchy-bar" put omarchy.keyboard-layout --after omarchy.clock 2>&1) ||
+put_output=$(PATH="$put_tmp/bin:$ROOT/bin:$PATH" CODESWOT_TEST_SHELL_STATE=missing \
+  CODESWOT_SHELL_ABSENT_ATTEMPTS=2 \
+  "$ROOT/bin/codeswot-bar" put omarchy.keyboard-layout --after omarchy.clock 2>&1) ||
   fail "put carries on when no shell is running" "$put_output"
 [[ $put_output == *"is not running"* ]] || fail "put says why it placed nothing" "$put_output"
 pass "put carries on when no shell is running"
 
-put_output=$(PATH="$put_tmp/bin:$ROOT/bin:$PATH" OMARCHY_TEST_SHELL_STATE=spawning \
-  OMARCHY_TEST_SHELL_MARKER="$put_tmp/spawned" \
-  "$ROOT/bin/omarchy-bar" put omarchy.keyboard-layout --after omarchy.clock 2>&1) ||
+put_output=$(PATH="$put_tmp/bin:$ROOT/bin:$PATH" CODESWOT_TEST_SHELL_STATE=spawning \
+  CODESWOT_TEST_SHELL_MARKER="$put_tmp/spawned" \
+  "$ROOT/bin/codeswot-bar" put omarchy.keyboard-layout --after omarchy.clock 2>&1) ||
   fail "put waits for a shell that is being spawned" "$put_output"
 [[ $put_output == "omarchy.keyboard-layout is on the bar" ]] || fail "put places once the shell answers" "$put_output"
 pass "put waits for a shell that is being spawned"
 
-put_output=$(PATH="$put_tmp/bin:$ROOT/bin:$PATH" OMARCHY_TEST_SHELL_STATE=starting OMARCHY_SHELL_READY_ATTEMPTS=2 \
-  "$ROOT/bin/omarchy-bar" put omarchy.keyboard-layout --after omarchy.clock 2>&1) &&
+put_output=$(PATH="$put_tmp/bin:$ROOT/bin:$PATH" CODESWOT_TEST_SHELL_STATE=starting CODESWOT_SHELL_READY_ATTEMPTS=2 \
+  "$ROOT/bin/codeswot-bar" put omarchy.keyboard-layout --after omarchy.clock 2>&1) &&
   fail "put fails when the shell never becomes ready" "$put_output"
 [[ $put_output == *"did not become ready"* ]] || fail "put says the shell never became ready" "$put_output"
 pass "put fails when the shell never becomes ready"
 
-put_output=$(PATH="$put_tmp/bin:$ROOT/bin:$PATH" OMARCHY_TEST_SHELL_STATE=crashing \
-  OMARCHY_TEST_SHELL_MARKER="$put_tmp/started" \
-  "$ROOT/bin/omarchy-bar" put omarchy.keyboard-layout --after omarchy.clock 2>&1) &&
+put_output=$(PATH="$put_tmp/bin:$ROOT/bin:$PATH" CODESWOT_TEST_SHELL_STATE=crashing \
+  CODESWOT_TEST_SHELL_MARKER="$put_tmp/started" \
+  "$ROOT/bin/codeswot-bar" put omarchy.keyboard-layout --after omarchy.clock 2>&1) &&
   fail "put fails when a starting shell disappears" "$put_output"
 [[ $put_output == *"did not become ready"* ]] || fail "put keeps a lost shell retryable" "$put_output"
 pass "put fails when a starting shell disappears"
 
-put_output=$(PATH="$put_tmp/bin:$ROOT/bin:$PATH" OMARCHY_TEST_SHELL_STATE=oldshell \
-  "$ROOT/bin/omarchy-bar" put omarchy.keyboard-layout --after omarchy.clock 2>&1) ||
+put_output=$(PATH="$put_tmp/bin:$ROOT/bin:$PATH" CODESWOT_TEST_SHELL_STATE=oldshell \
+  "$ROOT/bin/codeswot-bar" put omarchy.keyboard-layout --after omarchy.clock 2>&1) ||
   fail "put falls back against a shell that has not restarted yet" "$put_output"
 [[ $put_output == "omarchy.keyboard-layout is on the bar" ]] || fail "put places without the missing neighbour" "$put_output"
 pass "put falls back against a shell that has not restarted yet"
 
-put_output=$(PATH="$put_tmp/bin:$ROOT/bin:$PATH" OMARCHY_TEST_SHELL_STATE=vanishing \
-  OMARCHY_TEST_SHELL_MARKER="$put_tmp/vanished" \
-  "$ROOT/bin/omarchy-bar" put omarchy.keyboard-layout --after omarchy.clock 2>&1) &&
+put_output=$(PATH="$put_tmp/bin:$ROOT/bin:$PATH" CODESWOT_TEST_SHELL_STATE=vanishing \
+  CODESWOT_TEST_SHELL_MARKER="$put_tmp/vanished" \
+  "$ROOT/bin/codeswot-bar" put omarchy.keyboard-layout --after omarchy.clock 2>&1) &&
   fail "put fails when the shell goes away mid-fallback" "$put_output"
 [[ $put_output == *"did not become ready"* ]] || fail "put remembers the shell answered once" "$put_output"
 pass "put fails when the shell goes away mid-fallback"
 
-put_output=$(PATH="$put_tmp/bin:$ROOT/bin:$PATH" OMARCHY_TEST_SHELL_STATE=unsupported \
-  "$ROOT/bin/omarchy-bar" put omarchy.keyboard-layout --after omarchy.clock 2>&1) &&
+put_output=$(PATH="$put_tmp/bin:$ROOT/bin:$PATH" CODESWOT_TEST_SHELL_STATE=unsupported \
+  "$ROOT/bin/codeswot-bar" put omarchy.keyboard-layout --after omarchy.clock 2>&1) &&
   fail "put fails when the shell cannot answer the call" "$put_output"
 [[ $put_output == *"Function not found"* ]] || fail "put passes on what the shell said" "$put_output"
 pass "put fails when the shell cannot answer the call"
 
-put_output=$(PATH="$put_tmp/bin:$ROOT/bin:$PATH" OMARCHY_TEST_SHELL_STATE=scanning \
-  OMARCHY_TEST_SHELL_MARKER="$put_tmp/scanned" \
-  "$ROOT/bin/omarchy-bar" put omarchy.keyboard-layout --after omarchy.clock 2>&1) ||
+put_output=$(PATH="$put_tmp/bin:$ROOT/bin:$PATH" CODESWOT_TEST_SHELL_STATE=scanning \
+  CODESWOT_TEST_SHELL_MARKER="$put_tmp/scanned" \
+  "$ROOT/bin/codeswot-bar" put omarchy.keyboard-layout --after omarchy.clock 2>&1) ||
   fail "put asks again while the shell is still reading its plugins" "$put_output"
 [[ $put_output == "omarchy.keyboard-layout is on the bar" ]] || fail "put places once the plugins are read" "$put_output"
 pass "put asks again while the shell is still reading its plugins"
 
 put_output=$(PATH="$put_tmp/bin:$ROOT/bin:$PATH" \
-  "$ROOT/bin/omarchy-bar" put omarchy.keyboard-layout --after omarchy.clock 2>&1) ||
+  "$ROOT/bin/codeswot-bar" put omarchy.keyboard-layout --after omarchy.clock 2>&1) ||
   fail "put places a widget through a ready shell" "$put_output"
 [[ $put_output == "omarchy.keyboard-layout is on the bar" ]] || fail "put reports the placed widget" "$put_output"
 pass "put places a widget through a ready shell"

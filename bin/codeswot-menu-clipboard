@@ -1,0 +1,6 @@
+#!/bin/bash
+# codeswot:summary=Launch the clipboard manager
+# codeswot:group=menu
+# codeswot:examples=codeswot menu clipboard
+
+codeswot-shell shell toggle omarchy.clipboard

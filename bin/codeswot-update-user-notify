@@ -1,0 +1,6 @@
+#!/bin/bash
+
+# codeswot:summary=Compatibility wrapper for codeswot-migrate-notify.
+# codeswot:hidden=true
+
+exec codeswot-migrate-notify "$@"

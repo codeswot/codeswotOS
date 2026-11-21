@@ -12,7 +12,7 @@ trap 'rm -rf "$test_dir"' EXIT
 
 mkdir -p "$test_dir/bin"
 
-cat >"$test_dir/bin/omarchy-restart-shell" <<'STUB'
+cat >"$test_dir/bin/codeswot-restart-shell" <<'STUB'
 #!/bin/bash
 
 echo restart >>"$SHELL_RESTARTS"
@@ -23,7 +23,7 @@ chmod +x "$test_dir/bin/"*
 export SHELL_RESTARTS="$test_dir/shell-restarts"
 
 home="$test_dir/home"
-config="$home/.config/omarchy/shell.json"
+config="$home/.config/codeswot/shell.json"
 
 run_migration() {
   : >"$SHELL_RESTARTS"
@@ -34,8 +34,8 @@ run_migration() {
 # this migration has on disk.
 write_config() {
   rm -rf "$home"
-  mkdir -p "$home/.config/omarchy"
-  jq "${1:-.}" "$ROOT/config/omarchy/shell.json" >"$config"
+  mkdir -p "$home/.config/codeswot"
+  jq "${1:-.}" "$ROOT/config/codeswot/shell.json" >"$config"
 }
 
 without_widget='del(.bar.layout[][] | select((if type == "object" then .id else . end) == "omarchy.agents"))'
@@ -46,7 +46,7 @@ ids() {
 
 # ------------------------------------------------------------------ shipped default
 
-jq -e '[.bar.layout.right[].id] | index("omarchy.agents")' "$ROOT/config/omarchy/shell.json" >/dev/null ||
+jq -e '[.bar.layout.right[].id] | index("omarchy.agents")' "$ROOT/config/codeswot/shell.json" >/dev/null ||
   fail "shipped config puts the agents widget in the bar"
 pass "shipped config puts the agents widget in the bar"
 
@@ -59,8 +59,8 @@ run_migration
   fail "migration inserts the agents widget after the tray" "$(ids right)"
 pass "migration inserts the agents widget after the tray"
 
-(($(wc -l <"$SHELL_RESTARTS") == 0)) || fail "migration leaves the shell restart to omarchy update"
-pass "migration leaves the shell restart to omarchy update"
+(($(wc -l <"$SHELL_RESTARTS") == 0)) || fail "migration leaves the shell restart to codeswot update"
+pass "migration leaves the shell restart to codeswot update"
 
 before=$(sha256sum "$config")
 run_migration
@@ -105,7 +105,7 @@ pass "migration touches nothing but the right section"
 
 # A config the migration cannot parse is left alone rather than truncated.
 rm -rf "$home"
-mkdir -p "$home/.config/omarchy"
+mkdir -p "$home/.config/codeswot"
 printf '{ not json' >"$config"
 run_migration
 

@@ -1,0 +1,5 @@
+#!/bin/bash
+
+# codeswot:summary=Detect ASUS Zenbook UX5406AA series laptops on Intel Panther Lake.
+
+codeswot-hw-match "ux5406aa" && codeswot-hw-intel-ptl

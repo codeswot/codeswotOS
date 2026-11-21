@@ -1,0 +1,18 @@
+#!/bin/bash
+
+# codeswot:summary=Print the active codeswotOS dev-link git branch
+# codeswot:hidden=true
+
+omarchy_path=${CODESWOT_PATH:-/usr/share/codeswot}
+omarchy_path=${omarchy_path%/}
+
+[[ $omarchy_path != "/usr/share/codeswot" ]] || exit 1
+
+branch=$(git -C "$omarchy_path" branch --show-current 2>/dev/null || true)
+if [[ -z $branch ]]; then
+  hash=$(git -C "$omarchy_path" rev-parse --short HEAD 2>/dev/null || true)
+  [[ -n $hash ]] || exit 1
+  branch="detached@$hash"
+fi
+
+echo "$branch"

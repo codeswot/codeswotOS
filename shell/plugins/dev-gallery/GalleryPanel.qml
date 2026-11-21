@@ -5,9 +5,9 @@ import qs.Ui
 import qs.Commons
 import qs.Commons as Commons
 
-// Visual reference + live playground for omarchy-shell's common UI
-// components. Summon with `omarchy dev ui-preview`, or directly via:
-//   omarchy-shell shell summon omarchy.dev-gallery "{}"
+// Visual reference + live playground for codeswot-shell's common UI
+// components. Summon with `codeswot dev ui-preview`, or directly via:
+//   codeswot-shell shell summon omarchy.dev-gallery "{}"
 //
 // Every section here renders the REAL component (not a copy) so the
 // gallery doubles as a smoke test. When you add a new common component,
@@ -23,7 +23,7 @@ Item {
     closingFromHost = false
     window.visible = true
 
-    // Optional { section: "button" } in the payload lets `omarchy dev
+    // Optional { section: "button" } in the payload lets `codeswot dev
     // ui-preview <section>` open the gallery with the cursor already on
     // a specific component, so iterating on one widget doesn't require
     // scrolling from the top each time. Unknown section names are
@@ -277,7 +277,7 @@ Item {
 
   FloatingWindow {
     id: window
-    title: "Omarchy shell – dev gallery"
+    title: "codeswotOS shell – dev gallery"
     color: root.background
     implicitWidth: 720
     implicitHeight: 760
@@ -355,7 +355,7 @@ Item {
             spacing: Style.space(4)
 
             Text {
-              text: "Omarchy shell · dev gallery"
+              text: "codeswotOS shell · dev gallery"
               color: root.foreground
               font.family: root.fontFamily
               font.pixelSize: Style.font.iconLarge
@@ -459,7 +459,7 @@ Item {
                 + "proportionally. There is no upper clamp. Themes can also pin "
                 + "individual tokens (caption, heading, display, etc.) for stylistic "
                 + "emphasis. The family follows the fontconfig monospace alias \u2014 "
-                + "set it with `omarchy font set <name>`."
+                + "set it with `codeswot font set <name>`."
               color: Qt.darker(root.foreground, 1.5)
               font.family: root.fontFamily
               font.pixelSize: Style.font.bodySmall
@@ -1669,7 +1669,7 @@ Item {
                     { value: "Media", label: "Media", description: "Now-playing + transport" },
                     { value: "Workspaces", label: "Workspaces", description: "Hyprland workspace pills" },
                     { value: "system-tray", label: "System tray", description: "StatusNotifierItem icons" },
-                    { value: "omarchy-menu", label: "Omarchy menu", description: "Launcher / system menu" },
+                    { value: "codeswot-menu", label: "codeswotOS menu", description: "Launcher / system menu" },
                     { value: "power-profiles", label: "Power profiles", description: "Performance / balanced / saver" },
                     { value: "hardware", label: "Hardware", description: "CPU, GPU, mem utilization" },
                     { value: "notifications", label: "Notifications", description: "Recent notification history" }

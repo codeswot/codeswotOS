@@ -1,0 +1,11 @@
+[Trigger]
+Operation = Upgrade
+Type = Package
+Target = *
+
+[Action]
+Description = Checking codeswotOS update entrypoint...
+When = PreTransaction
+Depends = codeswot
+Exec = /usr/bin/codeswot-update-pacman-guard
+AbortOnFail

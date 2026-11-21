@@ -1,5 +1,5 @@
 {
-  "name": "Omarchy",
+  "name": "codeswotOS",
   "appearance": "{{ mode }}",
   "canvas": "{{ background }}",
   "accent": "{{ accent }}",

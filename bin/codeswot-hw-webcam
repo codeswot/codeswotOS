@@ -1,0 +1,5 @@
+#!/bin/bash
+
+# codeswot:summary=Check whether a webcam is available
+
+[[ -n $(codeswot-capture-webcam-list) ]]

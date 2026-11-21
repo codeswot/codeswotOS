@@ -1,0 +1,20 @@
+#!/bin/bash
+
+# codeswot:summary=Cycle to the next media source and transfer playback when the current source is playing
+# codeswot:args=[next|previous]
+# codeswot:examples=codeswot audio source switch | codeswot-audio-source-switch previous
+
+direction="${1:-next}"
+
+case "$direction" in
+  next)
+    codeswot-shell media sourceSwitch
+    ;;
+  previous)
+    codeswot-shell media sourceSwitchPrevious
+    ;;
+  *)
+    echo "Usage: codeswot-audio-source-switch [next|previous]" >&2
+    exit 1
+    ;;
+esac

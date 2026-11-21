@@ -4,7 +4,7 @@ import Quickshell
 ShellRoot {
   id: root
 
-  property string resultPath: Quickshell.env("OMARCHY_QML_TEST_RESULT")
+  property string resultPath: Quickshell.env("CODESWOT_QML_TEST_RESULT")
   property var failures: []
   property var commands: []
 
@@ -163,7 +163,7 @@ ShellRoot {
     return "'" + String(value).replace(/'/g, "'\\''") + "'"
   }
 
-  readonly property string rootPath: Quickshell.env("OMARCHY_PATH")
+  readonly property string rootPath: Quickshell.env("CODESWOT_PATH")
 
   Timer {
     interval: 1
@@ -192,10 +192,10 @@ ShellRoot {
         screenRecording.moduleName = "ScreenRecording"
         root.injectBar(screenRecording)
         screenRecording.triggerPress(Qt.LeftButton)
-        root.assertTrue(root.commandCount("omarchy-menu toggle trigger.capture.screenrecord") === 1, "Screen Recording left click opens capture menu when idle")
+        root.assertTrue(root.commandCount("codeswot-menu toggle trigger.capture.screenrecord") === 1, "Screen Recording left click opens capture menu when idle")
         screenRecording.recording = true
         screenRecording.triggerPress(Qt.LeftButton)
-        root.assertTrue(root.commandCount("omarchy-capture-screenrecording --stop-recording") === 1, "Screen Recording left click stops active recording")
+        root.assertTrue(root.commandCount("codeswot-capture-screenrecording --stop-recording") === 1, "Screen Recording left click stops active recording")
       }
 
       var dictation = root.createIndicator("Dictation")
@@ -204,8 +204,8 @@ ShellRoot {
         root.injectBar(dictation)
         dictation.triggerPress(Qt.LeftButton)
         dictation.triggerPress(Qt.RightButton)
-        root.assertTrue(root.commandCount("omarchy-voxtype-config") === 2, "Dictation clicks run config command")
-        root.assertTrue(root.commandCount("omarchy-voxtype-model") === 0, "Dictation clicks do not run model command")
+        root.assertTrue(root.commandCount("codeswot-voxtype-config") === 2, "Dictation clicks run config command")
+        root.assertTrue(root.commandCount("codeswot-voxtype-model") === 0, "Dictation clicks do not run model command")
       }
 
       var stayAwake = root.createIndicator("StayAwake")

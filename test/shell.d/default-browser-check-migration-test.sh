@@ -25,7 +25,7 @@ printf '%s\n' '--enable-features=BraveFeature' >"$test_tmp/targets/brave-flags.c
 ln -s "$test_tmp/targets/brave-flags.conf" "$config_dir/brave-flags.conf"
 
 run_migration() {
-  HOME="$home" OMARCHY_PATH="$ROOT" PATH="$test_tmp/bin:$PATH" SUDO_LOG="$test_tmp/sudo" \
+  HOME="$home" CODESWOT_PATH="$ROOT" PATH="$test_tmp/bin:$PATH" SUDO_LOG="$test_tmp/sudo" \
     bash -euo pipefail "$migration" >/dev/null
 }
 
@@ -50,16 +50,16 @@ grep -qxF -- '--no-default-browser-check' "$ROOT/config/chromium-flags.conf" ||
   fail "new Chromium-family flags skip the default browser check"
 [[ $(jq '.policies.DontCheckDefaultBrowser' "$ROOT/default/firefox/policies.json") == "true" ]] ||
   fail "Firefox's policies skip the default browser check"
-[[ $(jq '.DefaultBrowserSettingEnabled' "$ROOT/default/chromium/policies/omarchy.json") == "false" ]] ||
+[[ $(jq '.DefaultBrowserSettingEnabled' "$ROOT/default/chromium/policies/codeswot.json") == "false" ]] ||
   fail "Chromium-family policy hides the default browser setting"
 pass "new installs skip the default browser check"
 
-# Only Omarchy's own policy files go into root-owned directories.
+# Only codeswotOS's own policy files go into root-owned directories.
 if [[ -f $test_tmp/sudo ]]; then
   while read -r line; do
-    [[ $line == "install -m 644 -o root -g root -T $ROOT/default/"*" "*/omarchy.json ||
+    [[ $line == "install -m 644 -o root -g root -T $ROOT/default/"*" "*/codeswot.json ||
       $line == "install -m 644 -o root -g root -T "*" "*/distribution/policies.json ]] ||
-      fail "the migration writes only Omarchy's policy files as root" "$line"
+      fail "the migration writes only codeswotOS's policy files as root" "$line"
   done <"$test_tmp/sudo"
 fi
-pass "the migration writes only Omarchy's policy files as root"
+pass "the migration writes only codeswotOS's policy files as root"

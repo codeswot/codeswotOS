@@ -1,0 +1,21 @@
+#!/bin/bash
+
+# codeswot:summary=Update the active codeswotOS dev checkout
+
+set -euo pipefail
+
+[[ $CODESWOT_PATH != "/usr/share/codeswot" ]] || exit 0
+
+if ! git -C "$CODESWOT_PATH" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+  echo "Error: CODESWOT_PATH is not a git checkout: $CODESWOT_PATH" >&2
+  exit 1
+fi
+
+upstream=$(git -C "$CODESWOT_PATH" rev-parse --abbrev-ref --symbolic-full-name '@{upstream}' 2>/dev/null || true)
+if [[ -z $upstream ]]; then
+  echo -e "\e[33m\nSkip codeswotOS dev checkout update (current branch has no upstream)\e[0m"
+  exit 0
+fi
+
+echo -e "\e[32m\nUpdate codeswotOS dev checkout\e[0m"
+git -C "$CODESWOT_PATH" pull --ff-only

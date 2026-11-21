@@ -1,0 +1,6 @@
+#!/bin/bash
+
+# codeswot:summary=Check if a toggle is enabled (flag file exists)
+# codeswot:args=<flag-name>
+
+[[ -f "$HOME/.local/state/codeswot/toggles/$1" ]]

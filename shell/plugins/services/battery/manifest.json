@@ -3,7 +3,7 @@
   "id": "omarchy.battery",
   "name": "Battery",
   "version": "1.0.0",
-  "author": "Omarchy",
+  "author": "codeswotOS",
   "description": "Low battery warning service",
   "kinds": [
     "service"

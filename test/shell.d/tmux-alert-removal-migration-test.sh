@@ -21,10 +21,10 @@ case "$1" in
   has-session) exit "${TMUX_SERVER_MISSING:-0}" ;;
   show-hooks)
     cat <<'HOOKS'
-after-select-window[0] run-shell -b "omarchy-tmux-alert track #{window_id} #{window_activity}"
+after-select-window[0] run-shell -b "codeswot-tmux-alert track #{window_id} #{window_activity}"
 alert-activity
-alert-bell[0] run-shell -b "omarchy-shell -q omarchy.indicators refresh"
-client-focus-in[100] run-shell -b "omarchy-tmux-alert track #{window_id} #{window_activity}"
+alert-bell[0] run-shell -b "codeswot-shell -q omarchy.indicators refresh"
+client-focus-in[100] run-shell -b "codeswot-tmux-alert track #{window_id} #{window_activity}"
 client-focus-out[42] display-message "user hook"
 session-created
 HOOKS
@@ -33,20 +33,20 @@ HOOKS
 esac
 STUB
 
-cat >"$test_dir/bin/omarchy-restart-tmux" <<'STUB'
+cat >"$test_dir/bin/codeswot-restart-tmux" <<'STUB'
 #!/bin/bash
 
 echo restart >>"$TMUX_RESTARTS"
 STUB
 
-cat >"$test_dir/bin/omarchy-restart-shell" <<'STUB'
+cat >"$test_dir/bin/codeswot-restart-shell" <<'STUB'
 #!/bin/bash
 
 echo restart >>"$SHELL_RESTARTS"
 exit "${SHELL_RESTART_STATUS:-0}"
 STUB
 
-cat >"$test_dir/bin/omarchy-state" <<'STUB'
+cat >"$test_dir/bin/codeswot-state" <<'STUB'
 #!/bin/bash
 
 printf '%s\n' "$*" >>"$STATE_CALLS"
@@ -61,7 +61,7 @@ export STATE_CALLS="$test_dir/state-calls"
 
 home="$test_dir/home"
 tmux_config="$home/.config/tmux/tmux.conf"
-shell_config="$home/.config/omarchy/shell.json"
+shell_config="$home/.config/codeswot/shell.json"
 
 run_migration() {
   : >"$TMUX_CALLS"
@@ -74,7 +74,7 @@ run_migration() {
 
 reset_home() {
   rm -rf "$home"
-  mkdir -p "$home/.config/tmux" "$home/.config/omarchy"
+  mkdir -p "$home/.config/tmux" "$home/.config/codeswot"
 }
 
 # ---------------------------------------------------------------- tmux config
@@ -85,13 +85,13 @@ reset_home
 awk '
   /^# Status bar$/ {
     print "# Alerts"
-    print "set-hook -g alert-bell '\''run-shell -b \"omarchy-shell -q omarchy.indicators refresh\"'\''"
-    print "set-hook -g alert-activity '\''run-shell -b \"omarchy-shell -q omarchy.indicators refresh\"'\''"
-    print "set-hook -g alert-silence '\''run-shell -b \"omarchy-shell -q omarchy.indicators refresh\"'\''"
-    print "set-hook -g after-select-window '\''run-shell -b \"omarchy-tmux-alert track #{window_id} #{window_activity}\"'\''"
-    print "set-hook -g client-session-changed '\''run-shell -b \"omarchy-tmux-alert track #{window_id} #{window_activity}\"'\''"
-    print "set-hook -g client-focus-out[100] '\''run-shell -b \"omarchy-tmux-alert track #{window_id} #{window_activity}\"'\''"
-    print "set-hook -g client-focus-in[100] '\''run-shell -b \"omarchy-tmux-alert track #{window_id} #{window_activity}\"'\''"
+    print "set-hook -g alert-bell '\''run-shell -b \"codeswot-shell -q omarchy.indicators refresh\"'\''"
+    print "set-hook -g alert-activity '\''run-shell -b \"codeswot-shell -q omarchy.indicators refresh\"'\''"
+    print "set-hook -g alert-silence '\''run-shell -b \"codeswot-shell -q omarchy.indicators refresh\"'\''"
+    print "set-hook -g after-select-window '\''run-shell -b \"codeswot-tmux-alert track #{window_id} #{window_activity}\"'\''"
+    print "set-hook -g client-session-changed '\''run-shell -b \"codeswot-tmux-alert track #{window_id} #{window_activity}\"'\''"
+    print "set-hook -g client-focus-out[100] '\''run-shell -b \"codeswot-tmux-alert track #{window_id} #{window_activity}\"'\''"
+    print "set-hook -g client-focus-in[100] '\''run-shell -b \"codeswot-tmux-alert track #{window_id} #{window_activity}\"'\''"
     print ""
   }
   { print }
@@ -124,11 +124,11 @@ set-hook -g alert-bell 'display-message "mine"'
 set-hook -g client-focus-out[42] 'display-message "custom focus hook"'
 
 # Alerts
-set-hook -g alert-bell 'run-shell -b "omarchy-shell -q omarchy.indicators refresh"'
-set-hook -g alert-activity 'run-shell -b "omarchy-shell -q omarchy.indicators refresh"'
-set-hook -g after-select-window 'run-shell -b "omarchy-shell -q omarchy.indicators refresh"'
-  set-hook -g client-session-changed 'run-shell -b "omarchy-tmux-alert track #{window_id} #{window_activity}"'
-set-hook -g client-focus-out[100] 'run-shell -b "omarchy-tmux-alert track #{window_id} #{window_activity}"'
+set-hook -g alert-bell 'run-shell -b "codeswot-shell -q omarchy.indicators refresh"'
+set-hook -g alert-activity 'run-shell -b "codeswot-shell -q omarchy.indicators refresh"'
+set-hook -g after-select-window 'run-shell -b "codeswot-shell -q omarchy.indicators refresh"'
+  set-hook -g client-session-changed 'run-shell -b "codeswot-tmux-alert track #{window_id} #{window_activity}"'
+set-hook -g client-focus-out[100] 'run-shell -b "codeswot-tmux-alert track #{window_id} #{window_activity}"'
 EOF
 
 run_migration
@@ -139,7 +139,7 @@ expected=$(printf '%s\n' 'set -g mouse on' '' '' '# Custom' "set-hook -g alert-b
 pass "alert removal drops an appended block and keeps the user's lines"
 
 # An older config kept the refresh spelling of these two hooks; an indented one
-# is still the hook Omarchy wrote.
+# is still the hook codeswotOS wrote.
 grep -q 'after-select-window\|client-session-changed' "$tmux_config" &&
   fail "alert removal drops the older and indented hook spellings"
 pass "alert removal drops the older and indented hook spellings"
@@ -160,7 +160,7 @@ cat >"$home/dotfiles/tmux.conf" <<'EOF'
 set -g mouse on
 
 # Alerts
-set-hook -g alert-bell 'run-shell -b "omarchy-shell -q omarchy.indicators refresh"'
+set-hook -g alert-bell 'run-shell -b "codeswot-shell -q omarchy.indicators refresh"'
 EOF
 ln -sf "$home/dotfiles/tmux.conf" "$tmux_config"
 

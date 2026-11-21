@@ -18,7 +18,7 @@ else
   "$@"
 fi
 SH
-cat >"$test_dir/bin/omarchy-update-system-pkgs" <<'SH'
+cat >"$test_dir/bin/codeswot-update-system-pkgs" <<'SH'
 #!/bin/bash
 # Snapshot exactly the configuration visible to the package updater.
 cat "$PACMAN_CONFIG" >"$CALL_LOG"

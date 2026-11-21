@@ -5,7 +5,7 @@ import "services"
 ShellRoot {
   id: root
 
-  readonly property string resultPath: Quickshell.env("OMARCHY_QML_TEST_RESULT")
+  readonly property string resultPath: Quickshell.env("CODESWOT_QML_TEST_RESULT")
   property var failures: []
   property int changeCount: 0
   property var config: ({
@@ -151,7 +151,7 @@ ShellRoot {
     root.assertEqual(registry.entryPointUrl(registry.installedPlugins["third.panel"], "panel"), "file:///third/panel/Panel.qml", "entryPointUrl resolves plugin-relative paths")
     root.assertEqual(registry.entryPointUrl(registry.installedPlugins["third.widget"], "barWidget"), "file:///third/widget/Widget.qml", "entryPointUrl resolves bar widget paths")
 
-    root.assertTrue(!has("omarchy.reserved"), "third-party omarchy namespace ids are rejected")
+    root.assertTrue(!has("omarchy.reserved"), "third-party codeswot namespace ids are rejected")
     root.assertTrue(!has("third.unsafe"), "unsafe entry points are rejected")
     root.assertTrue(!has("third.missing"), "incomplete manifests are rejected")
     root.assertTrue(!has("third.bad-section"), "invalid default bar widget sections are rejected")
@@ -464,7 +464,7 @@ ShellRoot {
   PluginRegistry {
     id: registry
     firstPartyDir: ""
-    pluginsDir: Quickshell.env("HOME") + "/.config/omarchy/plugins"
+    pluginsDir: Quickshell.env("HOME") + "/.config/codeswot/plugins"
     shellConfigProvider: function() { return root.config }
     shellConfigMutator: function(mutator) {
       var next = JSON.parse(JSON.stringify(root.config || {}))

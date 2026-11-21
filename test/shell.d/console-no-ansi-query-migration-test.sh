@@ -2,7 +2,7 @@
 #
 # The migration that puts systemd.tty.term.console=dumb into effect on an
 # existing install: the package has already written the parameter into
-# omarchy-defaults.conf, so what is left is rebuilding the boot image, once per
+# codeswot-defaults.conf, so what is left is rebuilding the boot image, once per
 # machine, and only where it is needed.
 
 set -euo pipefail
@@ -72,7 +72,7 @@ configured() { # default command line, then kernel=command line overrides
 
 old_cmdline="root=PARTUUID=1 rw quiet splash initramfs_async=0"
 new_cmdline="$old_cmdline systemd.tty.term.console=dumb"
-defaults="$ROOT/etc/limine-entry-tool.d/omarchy-defaults.conf"
+defaults="$ROOT/etc/limine-entry-tool.d/codeswot-defaults.conf"
 configured "$new_cmdline"
 built="$new_cmdline"
 
@@ -81,15 +81,15 @@ run() { # booted cmdline, defaults conf
   printf '%s\n' "$1" >"$test_dir/cmdline"
   printf '  cmdline: %s\n' "$1" >"$test_dir/limine.conf"
   PATH="$stub_bin:$ROOT/bin:$PATH" REBUILDS="$test_dir/rebuilds" \
-    LIMINE_CONF="$test_dir/limine.conf" NEW_CMDLINE="$built" OMARCHY_LIMINE_CONF="$test_dir/limine.conf" \
-    OMARCHY_RUNNING_CMDLINE="$test_dir/cmdline" OMARCHY_LIMINE_DEFAULTS_CONF="$2" \
-    OMARCHY_KERNEL_MODULES_DIR="$modules_dir" KERNEL_CMDLINES="$kernel_cmdlines" \
-    OMARCHY_LIMINE_FUNCTIONS="$test_dir/limine-common-functions" \
-    OMARCHY_LIMINE_REBUILD_MARKER="$test_dir/marker" bash -euo pipefail "$migration" >/dev/null
+    LIMINE_CONF="$test_dir/limine.conf" NEW_CMDLINE="$built" CODESWOT_LIMINE_CONF="$test_dir/limine.conf" \
+    CODESWOT_RUNNING_CMDLINE="$test_dir/cmdline" CODESWOT_LIMINE_DEFAULTS_CONF="$2" \
+    CODESWOT_KERNEL_MODULES_DIR="$modules_dir" KERNEL_CMDLINES="$kernel_cmdlines" \
+    CODESWOT_LIMINE_FUNCTIONS="$test_dir/limine-common-functions" \
+    CODESWOT_LIMINE_REBUILD_MARKER="$test_dir/marker" bash -euo pipefail "$migration" >/dev/null
 }
 rebuilds() { wc -l <"$test_dir/rebuilds"; }
 
-# omarchy-migrate runs a migration with bash -euo pipefail, and so does run:
+# codeswot-migrate runs a migration with bash -euo pipefail, and so does run:
 # that is what stops a failed rebuild before the marker is written.
 if REBUILD_FAILS=1 run "$old_cmdline" "$defaults"; then
   fail "a rebuild that failed was reported as a success"
@@ -135,7 +135,7 @@ run "root=PARTUUID=1 systemd.tty.term.console=dumb$(printf '\f')foo=bar" "$defau
 pass "a later assignment of the key overrides the parameter, as systemd reads it"
 rm -f "$test_dir/marker"
 
-grep -v "tty.term.console" "$ROOT/etc/limine-entry-tool.d/omarchy-defaults.conf" >"$test_dir/edited.conf"
+grep -v "tty.term.console" "$ROOT/etc/limine-entry-tool.d/codeswot-defaults.conf" >"$test_dir/edited.conf"
 run "$old_cmdline" "$test_dir/edited.conf"
 [[ $(rebuilds) == 0 ]] || fail "a machine whose defaults leave the parameter out was rebuilt anyway"
 pass "a machine whose defaults were edited to leave the parameter out is left alone"
@@ -231,7 +231,7 @@ for tool in bash grep install cat sed tail; do ln -s "$(command -v "$tool")" "$t
 : >"$test_dir/rebuilds"
 printf '%s\n' "$old_cmdline" >"$test_dir/cmdline"
 PATH="$stub_bin:$ROOT/bin:$test_dir/tools" REBUILDS="$test_dir/rebuilds" \
-  OMARCHY_RUNNING_CMDLINE="$test_dir/cmdline" OMARCHY_LIMINE_DEFAULTS_CONF="$ROOT/etc/limine-entry-tool.d/omarchy-defaults.conf" \
-  OMARCHY_LIMINE_REBUILD_MARKER="$test_dir/marker" "$test_dir/tools/bash" -euo pipefail "$migration" >/dev/null
+  CODESWOT_RUNNING_CMDLINE="$test_dir/cmdline" CODESWOT_LIMINE_DEFAULTS_CONF="$ROOT/etc/limine-entry-tool.d/codeswot-defaults.conf" \
+  CODESWOT_LIMINE_REBUILD_MARKER="$test_dir/marker" "$test_dir/tools/bash" -euo pipefail "$migration" >/dev/null
 [[ ! -e $test_dir/marker ]] || fail "a machine without Limine was marked as rebuilt"
 pass "a machine without Limine is left alone"

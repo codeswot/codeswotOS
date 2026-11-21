@@ -1,0 +1,5 @@
+#!/bin/bash
+
+# codeswot:summary=Toggle the current weather panel
+
+codeswot-shell shell toggle omarchy.weather

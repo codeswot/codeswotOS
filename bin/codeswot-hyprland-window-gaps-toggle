@@ -1,0 +1,5 @@
+#!/bin/bash
+
+# codeswot:summary=Toggles the window gaps globally between no gaps and the default.
+
+codeswot-hyprland-toggle window-no-gaps

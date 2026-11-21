@@ -5,10 +5,10 @@ source "$(dirname "${BASH_SOURCE[0]}")/base-test.sh"
 require_command lua
 
 resolved_input() {
-  OMARCHY_PATH="$ROOT" OMARCHY_VCONSOLE="${1-}" lua <<'LUA'
-package.path = os.getenv("OMARCHY_PATH") .. "/?.lua;" .. package.path
+  CODESWOT_PATH="$ROOT" CODESWOT_VCONSOLE="${1-}" lua <<'LUA'
+package.path = os.getenv("CODESWOT_PATH") .. "/?.lua;" .. package.path
 
-local vconsole = os.getenv("OMARCHY_VCONSOLE")
+local vconsole = os.getenv("CODESWOT_VCONSOLE")
 local real_open = io.open
 
 io.open = function(path, mode)

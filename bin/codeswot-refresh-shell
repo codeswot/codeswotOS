@@ -1,0 +1,11 @@
+#!/bin/bash
+
+# codeswot:summary=Reset shell.json to codeswotOS defaults
+# codeswot:examples=codeswot refresh shell
+
+set -euo pipefail
+
+codeswot-refresh-config codeswot/shell.json
+codeswot-bar defaults
+
+codeswot-restart-shell

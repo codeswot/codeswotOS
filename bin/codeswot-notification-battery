@@ -1,0 +1,5 @@
+#!/bin/bash
+
+# codeswot:summary=Show the current battery status notification
+
+codeswot-notification-send -g 󰁹 -u low "$(codeswot-battery-status)"

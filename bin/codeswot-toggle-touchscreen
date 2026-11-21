@@ -1,0 +1,6 @@
+#!/bin/bash
+
+# codeswot:summary=Enable, disable, or toggle the touch functionality of the screen
+# codeswot:args=[on|off|toggle]
+
+exec codeswot-toggle-input-device touchscreen "${1:-toggle}"

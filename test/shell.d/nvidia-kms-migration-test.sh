@@ -15,7 +15,7 @@ calls="$test_tmp/calls.log"
 mkdir -p "$stub_bin"
 : >"$calls"
 
-cat >"$stub_bin/omarchy-cmd-present" <<'SH'
+cat >"$stub_bin/codeswot-cmd-present" <<'SH'
 #!/bin/bash
 
 (( ${LIMINE_MKINITCPIO_INSTALLED:-1} == 1 ))
@@ -65,10 +65,10 @@ write_pci_devices() {
 run_migration() {
   PATH="$stub_bin:$PATH" \
     TEST_LOG="$calls" \
-    OMARCHY_MKINITCPIO_HOOKS_CONF="$hooks_conf" \
-    OMARCHY_MKINITCPIO_NVIDIA_CONF="$nvidia_conf" \
-    OMARCHY_KMS_REBUILD_MARKER="$rebuild_marker" \
-    OMARCHY_PCI_DEVICES_PATH="$test_tmp/devices" \
+    CODESWOT_MKINITCPIO_HOOKS_CONF="$hooks_conf" \
+    CODESWOT_MKINITCPIO_NVIDIA_CONF="$nvidia_conf" \
+    CODESWOT_KMS_REBUILD_MARKER="$rebuild_marker" \
+    CODESWOT_PCI_DEVICES_PATH="$test_tmp/devices" \
     bash -euo pipefail "$migration" >/dev/null
 }
 

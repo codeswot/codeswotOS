@@ -22,7 +22,7 @@ ShellRoot {
 
   FileView {
     id: resultFile
-    path: Quickshell.env("OMARCHY_QML_TEST_RESULT")
+    path: Quickshell.env("CODESWOT_QML_TEST_RESULT")
     atomicWrites: true
   }
 

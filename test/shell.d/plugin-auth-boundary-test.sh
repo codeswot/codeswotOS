@@ -170,7 +170,7 @@ mkdir -p "$config_dir" "$TMPDIR/home"
 cp "$SHELL_TEST_DIR/fixtures/plugin-auth-boundary/"*.qml "$config_dir/"
 ln -s "$ROOT/shell/services" "$config_dir/services"
 
-OMARCHY_QML_TEST_RESULT="$result" \
+CODESWOT_QML_TEST_RESULT="$result" \
 HOME="$TMPDIR/home" \
 XDG_CONFIG_HOME="$TMPDIR/home/.config" \
 XDG_CACHE_HOME="$TMPDIR/home/.cache" \

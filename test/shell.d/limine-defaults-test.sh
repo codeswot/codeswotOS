@@ -4,7 +4,7 @@ set -euo pipefail
 
 source "$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)/base-test.sh"
 
-packaged_defaults="$ROOT/etc/limine-entry-tool.d/omarchy-defaults.conf"
+packaged_defaults="$ROOT/etc/limine-entry-tool.d/codeswot-defaults.conf"
 
 grep -Fq 'KERNEL_CMDLINE[default]+=" initramfs_async=0"' "$packaged_defaults" ||
   fail "the packaged Limine defaults still unpack the initramfs synchronously"
@@ -15,5 +15,5 @@ grep -Fxq 'KERNEL_CMDLINE[default]+=" systemd.tty.term.console=dumb"' "$packaged
 pass "packaged Limine defaults keep PID 1 from waiting on the console"
 
 grep -Fxq 'BOOT_ORDER="linux-t2, linux-omarchy, linux-omarchy-*, *, *fallback, Snapshots"' "$packaged_defaults" ||
-  fail "packaged Limine defaults protect T2 Macs and prefer the exact Omarchy kernel elsewhere"
-pass "packaged Limine defaults protect T2 Macs and prefer the exact Omarchy kernel elsewhere"
+  fail "packaged Limine defaults protect T2 Macs and prefer the exact codeswotOS kernel elsewhere"
+pass "packaged Limine defaults protect T2 Macs and prefer the exact codeswotOS kernel elsewhere"

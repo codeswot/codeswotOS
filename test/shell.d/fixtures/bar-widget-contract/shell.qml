@@ -5,8 +5,8 @@ import qs.Commons
 ShellRoot {
   id: root
 
-  readonly property string resultPath: Quickshell.env("OMARCHY_QML_TEST_RESULT")
-  readonly property string rootPath: Quickshell.env("OMARCHY_PATH")
+  readonly property string resultPath: Quickshell.env("CODESWOT_QML_TEST_RESULT")
+  readonly property string rootPath: Quickshell.env("CODESWOT_PATH")
   property var failures: []
   property var createdIds: []
   property var createdObjects: []
@@ -41,7 +41,7 @@ ShellRoot {
 
   function widgets() {
     try {
-      return JSON.parse(Qt.atob(Quickshell.env("OMARCHY_QML_BAR_WIDGETS") || "W10="))
+      return JSON.parse(Qt.atob(Quickshell.env("CODESWOT_QML_BAR_WIDGETS") || "W10="))
     } catch (error) {
       fail("bar widget list failed to parse: " + error)
       return []

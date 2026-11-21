@@ -27,11 +27,11 @@ fi
 require_command jq
 
 shell_ipc() {
-  OMARCHY_PATH="$test_root" "$ROOT/bin/omarchy-shell" "$@"
+  CODESWOT_PATH="$test_root" "$ROOT/bin/codeswot-shell" "$@"
 }
 
 shell_ipc_quiet() {
-  OMARCHY_PATH="$test_root" "$ROOT/bin/omarchy-shell" -q "$@"
+  CODESWOT_PATH="$test_root" "$ROOT/bin/codeswot-shell" -q "$@"
 }
 
 fail_with_log() {
@@ -41,7 +41,7 @@ fail_with_log() {
 }
 
 TMPDIR=$(mktemp -d)
-test_root="$TMPDIR/omarchy"
+test_root="$TMPDIR/codeswot"
 test_home="$TMPDIR/home"
 stub_bin="$TMPDIR/bin"
 log="$TMPDIR/quickshell.log"
@@ -50,9 +50,9 @@ cp -a "$ROOT/shell" "$test_root/shell"
 ln -s "$ROOT/config" "$test_root/config"
 ln -s "$ROOT/bin" "$test_root/bin"
 
-# Every plugin under ~/.config/omarchy/plugins hot-reloads, whoever wrote it.
+# Every plugin under ~/.config/codeswot/plugins hot-reloads, whoever wrote it.
 hot_reload_id="acme.hot-reload"
-hot_reload_dir="$test_home/.config/omarchy/plugins/$hot_reload_id"
+hot_reload_dir="$test_home/.config/codeswot/plugins/$hot_reload_id"
 mkdir -p "$hot_reload_dir"
 cat >"$hot_reload_dir/manifest.json" <<JSON
 {
@@ -77,7 +77,7 @@ QML
 # A keepLoaded service must keep its instance (and in-memory state) across a
 # plugin rescan. The marker below can only survive if the object does.
 keep_service_id="acme.keep-service"
-keep_service_dir="$test_home/.config/omarchy/plugins/$keep_service_id"
+keep_service_dir="$test_home/.config/codeswot/plugins/$keep_service_id"
 mkdir -p "$keep_service_dir"
 cat >"$keep_service_dir/manifest.json" <<JSON
 {
@@ -116,7 +116,7 @@ QML
 # live service, and its barConfig must be a detached snapshot on both initial
 # injection and later host-config updates.
 victim_service_id="acme.victim-service"
-victim_service_dir="$test_home/.config/omarchy/plugins/$victim_service_id"
+victim_service_dir="$test_home/.config/codeswot/plugins/$victim_service_id"
 mkdir -p "$victim_service_dir"
 cat >"$victim_service_dir/manifest.json" <<JSON
 {
@@ -140,7 +140,7 @@ QML
 # its own widget receives the raw companion service under the trusted bar, while
 # a replacement bar receives only the narrow media proxy resolved to the clone.
 media_clone_id="acme.media-clone"
-media_clone_dir="$test_home/.config/omarchy/plugins/$media_clone_id"
+media_clone_dir="$test_home/.config/codeswot/plugins/$media_clone_id"
 mkdir -p "$media_clone_dir"
 cat >"$media_clone_dir/manifest.json" <<JSON
 {
@@ -202,7 +202,7 @@ Item {
 QML
 
 review_bar_id="acme.review-bar"
-review_bar_dir="$test_home/.config/omarchy/plugins/$review_bar_id"
+review_bar_dir="$test_home/.config/codeswot/plugins/$review_bar_id"
 mkdir -p "$review_bar_dir"
 cat >"$review_bar_dir/manifest.json" <<JSON
 {
@@ -306,12 +306,12 @@ Item {
 }
 QML
 
-cat >"$stub_bin/omarchy-update-available" <<'SH'
+cat >"$stub_bin/codeswot-update-available" <<'SH'
 #!/bin/bash
-echo "Omarchy update available (test)"
+echo "codeswotOS update available (test)"
 exit 0
 SH
-chmod +x "$stub_bin/omarchy-update-available"
+chmod +x "$stub_bin/codeswot-update-available"
 
 cat >"$stub_bin/curl" <<'SH'
 #!/bin/bash
@@ -330,7 +330,7 @@ esac
 SH
 chmod +x "$stub_bin/curl"
 
-OMARCHY_PATH="$test_root" \
+CODESWOT_PATH="$test_root" \
 HOME="$test_home" \
 XDG_CONFIG_HOME="$test_home/.config" \
 XDG_CACHE_HOME="$test_home/.cache" \
@@ -484,7 +484,7 @@ pass "kept service is dropped when its plugin stops declaring a service"
 shell_ipc_quiet omarchy.system-update refresh >/dev/null 2>&1 || true
 sleep 0.8
 
-default_ids=$(jq -c '(.bar.layout.left + .bar.layout.center + .bar.layout.right) | map(.id // .)' "$ROOT/config/omarchy/shell.json")
+default_ids=$(jq -c '(.bar.layout.left + .bar.layout.center + .bar.layout.right) | map(.id // .)' "$ROOT/config/codeswot/shell.json")
 visible_default_ids='[
   "omarchy.menu",
   "omarchy.workspaces",
@@ -564,7 +564,7 @@ if (( worst > screens - 1 )); then
 fi
 pass "each widget registers its IPC handler once per screen"
 
-HOME="$test_home" OMARCHY_PATH="$test_root" PATH="$ROOT/bin:$PATH" "$ROOT/bin/omarchy-plugin-disable" omarchy.audio
+HOME="$test_home" CODESWOT_PATH="$test_root" PATH="$ROOT/bin:$PATH" "$ROOT/bin/codeswot-plugin-disable" omarchy.audio
 
 for _ in {1..80}; do
   shell_config=$(shell_ipc shell listShellConfig 2>/dev/null || true)
@@ -596,7 +596,7 @@ pass "bar remove reloads shell config and updates bar layout"
 # to place one that is missing and leave one that is already there alone,
 # however often it runs.
 bar_put() {
-  HOME="$test_home" OMARCHY_PATH="$test_root" PATH="$ROOT/bin:$PATH" "$ROOT/bin/omarchy-bar" put "$@"
+  HOME="$test_home" CODESWOT_PATH="$test_root" PATH="$ROOT/bin:$PATH" "$ROOT/bin/codeswot-bar" put "$@"
 }
 
 center_ids() {

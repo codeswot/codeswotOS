@@ -12,7 +12,7 @@ trap 'rm -rf "$test_dir"' EXIT
 
 mkdir -p "$test_dir/bin"
 
-cat >"$test_dir/bin/omarchy-agent-usage-update" <<'STUB'
+cat >"$test_dir/bin/codeswot-agent-usage-update" <<'STUB'
 #!/bin/bash
 
 echo run >>"$USAGE_UPDATES"
@@ -23,14 +23,14 @@ chmod +x "$test_dir/bin/"*
 export USAGE_UPDATES="$test_dir/usage-updates"
 
 home="$test_dir/home"
-config="$home/.config/omarchy/shell.json"
+config="$home/.config/codeswot/shell.json"
 
 run_migration() {
   : >"$USAGE_UPDATES"
   HOME="$home" PATH="$test_dir/bin:$PATH" bash -euo pipefail "$migration" >/dev/null
 }
 
-mkdir -p "$home/.config/omarchy" "$home/.cache/omarchy/model-usage"
+mkdir -p "$home/.config/codeswot" "$home/.cache/codeswot/model-usage"
 cat >"$config" <<'JSON'
 {
   "bar": {
@@ -60,7 +60,7 @@ pass "migration renames string-form entries"
   fail "migration keeps a disabled widget disabled" "$(cat "$config")"
 pass "migration keeps a disabled widget disabled"
 
-[[ ! -e $home/.cache/omarchy/model-usage ]] ||
+[[ ! -e $home/.cache/codeswot/model-usage ]] ||
   fail "migration drops the old scanner cache"
 pass "migration drops the old scanner cache"
 

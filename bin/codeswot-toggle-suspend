@@ -1,0 +1,11 @@
+#!/bin/bash
+
+# codeswot:summary=Toggle suspend availability in the system menu
+
+codeswot-toggle suspend-off
+
+if codeswot-toggle-enabled suspend-off; then
+  codeswot-notification-send -g 󰒲 "Suspend removed from system menu"
+else
+  codeswot-notification-send -g 󰒲 "Suspend now available in system menu"
+fi

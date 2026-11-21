@@ -1,0 +1,11 @@
+#!/bin/bash
+
+# codeswot:summary=Dismiss a notification by summary substring. Used by the first-run notifications to dismiss them after clicking for action.
+# codeswot:args=<summary>
+
+if (($# == 0)); then
+  echo "Usage: codeswot-notification-dismiss <summary>"
+  exit 1
+fi
+
+codeswot-shell -q notifications dismiss "$1"

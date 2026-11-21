@@ -1,0 +1,15 @@
+#!/bin/bash
+
+# codeswot:summary=Open a config file in the user's editor and surface a toast
+# codeswot:args=<path>
+# codeswot:examples=codeswot launch config-editor ~/.config/hypr/hyprland.lua
+
+path="${1-}"
+
+if [[ -z $path ]]; then
+  echo "Usage: codeswot-launch-config-editor <path>" >&2
+  exit 1
+fi
+
+codeswot-notification-send -u low "Editing config file" "$path"
+exec codeswot-launch-editor "$path"

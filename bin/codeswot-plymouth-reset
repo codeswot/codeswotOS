@@ -1,0 +1,9 @@
+#!/bin/bash
+
+# codeswot:summary=Restore the default codeswotOS Plymouth boot theme and SDDM login screen
+# codeswot:requires-sudo=true
+
+set -euo pipefail
+
+"$CODESWOT_PATH/bin/codeswot-refresh-plymouth"
+"$CODESWOT_PATH/bin/codeswot-refresh-sddm"

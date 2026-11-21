@@ -1,9 +1,9 @@
-mkdir -p ~/.config/omarchy
+mkdir -p ~/.config/codeswot
 
-cat >~/.config/omarchy/agent.conf <<EOF
-helper=$HOME/.local/share/omarchy/bin/omarchy-agent
+cat >~/.config/codeswot/agent.conf <<EOF
+helper=$HOME/.local/share/codeswot/bin/codeswot-agent
 EOF
 
-cat >"$HOME/.local/bin/omarchy-shim" <<EOF
-exec "$OMARCHY_PATH/bin/omarchy-agent" "$@"
+cat >"$HOME/.local/bin/codeswot-shim" <<EOF
+exec "$CODESWOT_PATH/bin/codeswot-agent" "$@"
 EOF

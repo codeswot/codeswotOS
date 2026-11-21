@@ -1,0 +1,5 @@
+#!/bin/bash
+
+# codeswot:summary=Reload btop configuration (used by the codeswotOS theme switching).
+
+pkill -SIGUSR2 btop

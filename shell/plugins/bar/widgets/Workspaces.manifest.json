@@ -3,7 +3,7 @@
   "id": "omarchy.workspaces",
   "name": "Workspaces",
   "version": "1.0.0",
-  "author": "Omarchy",
+  "author": "codeswotOS",
   "description": "Workspace number indicators",
   "kinds": [
     "bar-widget"

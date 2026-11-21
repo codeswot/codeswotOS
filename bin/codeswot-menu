@@ -1,0 +1,52 @@
+#!/bin/bash
+
+# codeswot:summary=Control the codeswotOS menu (toggle / summon / close / refresh)
+# codeswot:args=[toggle|summon|close|refresh|ping] [route]
+# codeswot:examples=codeswot menu | codeswot menu toggle system | codeswot menu summon style.theme | codeswot menu refresh
+
+# Thin wrapper around the standard plugin IPC surface. The menu is the
+# first-party `omarchy.menu` plugin; routes are passed as JSON payload.
+
+set -euo pipefail
+
+verb="${1-toggle}"
+route="${2-root}"
+
+menu_payload() {
+  jq -nc --arg menu "$1" '{ menu: $menu }'
+}
+
+case "$verb" in
+  toggle)
+    exec codeswot-shell shell toggle omarchy.menu "$(menu_payload "$route")"
+    ;;
+  summon)
+    exec codeswot-shell shell summon omarchy.menu "$(menu_payload "$route")"
+    ;;
+  close)
+    exec codeswot-shell shell hide omarchy.menu
+    ;;
+  refresh | ping)
+    exec codeswot-shell shell call omarchy.menu "$verb" "{}"
+    ;;
+  -h | --help | help)
+    cat <<USAGE
+Usage: codeswot menu [verb] [route]
+
+Verbs:
+  toggle [route]   Open the menu at <route>, or close it if already open. Default verb.
+  summon [route]   Always open the menu (no close-if-visible toggle).
+  close            Close the menu if it is visible.
+  refresh          Re-parse the menu JSONC files.
+  ping             Health check.
+
+Route is an item id (e.g. setup.power) or alias (e.g. power). Defaults to
+"root", which opens the top-level menu.
+USAGE
+    exit 0
+    ;;
+  *)
+    echo "codeswot-menu: unknown verb '$verb'. Try 'codeswot menu --help'." >&2
+    exit 2
+    ;;
+esac

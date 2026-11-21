@@ -1,0 +1,6 @@
+#!/bin/bash
+
+# codeswot:summary=Overwrite the user tmux config with the codeswotOS default and reload tmux.
+
+codeswot-refresh-config tmux/tmux.conf
+codeswot-restart-tmux

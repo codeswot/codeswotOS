@@ -1,0 +1,7 @@
+#!/bin/bash
+
+# codeswot:summary=Apply the current theme keyboard color to supported keyboards
+# codeswot:hidden=true
+
+codeswot-theme-set-keyboard-asus-rog
+codeswot-theme-set-keyboard-f16

@@ -1,27 +1,27 @@
-# Single source of truth for OMARCHY_PATH + PATH adjustments. Sourced by:
-#   /etc/profile.d/omarchy.sh                 (system login shells)
+# Single source of truth for CODESWOT_PATH + PATH adjustments. Sourced by:
+#   /etc/profile.d/codeswot.sh                 (system login shells)
 #   /etc/skel/.bashrc                         (interactive shells)
-#   /usr/share/uwsm/env.d/10-omarchy          (Hyprland session via uwsm)
-#   /usr/share/omarchy/default/bash/envs      (bash rc chain; SSH/non-login)
+#   /usr/share/uwsm/env.d/10-codeswot          (Hyprland session via uwsm)
+#   /usr/share/codeswot/default/bash/envs      (bash rc chain; SSH/non-login)
 
-# /etc/omarchy.conf is written by omarchy-dev-link and reset by
-# omarchy-dev-unlink. When absent, force the packaged default instead of
+# /etc/codeswot.conf is written by codeswot-dev-link and reset by
+# codeswot-dev-unlink. When absent, force the packaged default instead of
 # preserving a stale inherited value.
-if [ -f /etc/omarchy.conf ]; then
-  . /etc/omarchy.conf
-  : "${OMARCHY_PATH:=/usr/share/omarchy}"
+if [ -f /etc/codeswot.conf ]; then
+  . /etc/codeswot.conf
+  : "${CODESWOT_PATH:=/usr/share/codeswot}"
 else
-  OMARCHY_PATH=/usr/share/omarchy
+  CODESWOT_PATH=/usr/share/codeswot
 fi
-export OMARCHY_PATH
+export CODESWOT_PATH
 
 # Only prepend in dev-link mode. On a production install, the binaries are
-# already on PATH as /usr/bin/omarchy-* via the omarchy package — prepending
-# /usr/share/omarchy/bin would just be noise.
-if [ "$OMARCHY_PATH" != /usr/share/omarchy ]; then
+# already on PATH as /usr/bin/codeswot-* via the codeswot package — prepending
+# /usr/share/codeswot/bin would just be noise.
+if [ "$CODESWOT_PATH" != /usr/share/codeswot ]; then
   case ":$PATH:" in
-    *":${OMARCHY_PATH%/}/bin:"*) ;;
-    *) PATH="${OMARCHY_PATH%/}/bin${PATH:+:$PATH}" ;;
+    *":${CODESWOT_PATH%/}/bin:"*) ;;
+    *) PATH="${CODESWOT_PATH%/}/bin${PATH:+:$PATH}" ;;
   esac
 fi
 

@@ -1,0 +1,6 @@
+#!/bin/bash
+
+# codeswot:summary=Toggle notification do-not-disturb mode
+
+state=$(codeswot-shell notifications toggleDnd 2>/dev/null || echo "")
+codeswot-shell -q omarchy.indicators refresh

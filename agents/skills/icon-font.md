@@ -1,9 +1,9 @@
-# Omarchy Icon Font
+# codeswotOS Icon Font
 
 Read this before adding a branded glyph to `default/fonts/omarchy/omarchy.ttf`.
 
-The Omarchy icon font is a small private-use font carrying the marks Nerd
-Fonts does not have: the Omarchy logo and the agent and app brand marks. The
+The codeswotOS icon font is a small private-use font carrying the marks Nerd
+Fonts does not have: the codeswotOS logo and the agent and app brand marks. The
 menu draws one by naming the font on an entry:
 
 ```jsonc
@@ -20,11 +20,11 @@ came from. Keep that list accurate — it is the only record of provenance.
 
 ## Adding a glyph
 
-`omarchy dev font` does the work:
+`codeswot dev font` does the work:
 
 ```bash
-omarchy dev font list
-omarchy dev font add ollama https://simpleicons.org/icons/ollama.svg
+codeswot dev font list
+codeswot dev font add ollama https://simpleicons.org/icons/ollama.svg
 ```
 
 `add` fetches the SVG, scales it into the same 64..960 box the existing marks
@@ -54,9 +54,9 @@ The command prints these, and all of them matter:
 - Check the README line the command added, and give it a proper display name
   with `--label` if the glyph name is not the brand's name.
 
-The font is package-owned: `omarchy-settings` installs it to
+The font is package-owned: `codeswot-settings` installs it to
 `/usr/share/fonts/omarchy/omarchy.ttf`, so a new glyph reaches the desktop
-through a settings release, not through `omarchy update`. Between the merge and
+through a settings release, not through `codeswot update`. Between the merge and
 that release, a pulled checkout renders the new entry with no icon.
 
 ## Verifying
@@ -70,6 +70,6 @@ magick -background white -fill black -font default/fonts/omarchy/omarchy.ttf \
   -pointsize 110 label:@/tmp/row.txt /tmp/font-row.png
 ```
 
-Then confirm it in the running menu per [`visual-verification.md`](visual-verification.md). Avoid leaving two fonts with the `omarchy` family registered: Qt can use an old copy in `~/.local/share/fonts` even when `fc-match omarchy` reports the packaged font. For a preview, either replace the packaged file in the disposable VM or temporarily exclude it with a `<rejectfont>` rule in `~/.config/fontconfig/conf.d/` before loading the candidate.
+Then confirm it in the running menu per [`visual-verification.md`](visual-verification.md). Avoid leaving two fonts with the `codeswot` family registered: Qt can use an old copy in `~/.local/share/fonts` even when `fc-match codeswot` reports the packaged font. For a preview, either replace the packaged file in the disposable VM or temporarily exclude it with a `<rejectfont>` rule in `~/.config/fontconfig/conf.d/` before loading the candidate.
 
-Refresh the font cache and restart the shell afterwards — Qt reads the font database at startup, so `omarchy menu refresh` alone will not pick up a changed font. Remove temporary fonts and rules after verification.
+Refresh the font cache and restart the shell afterwards — Qt reads the font database at startup, so `codeswot menu refresh` alone will not pick up a changed font. Remove temporary fonts and rules after verification.

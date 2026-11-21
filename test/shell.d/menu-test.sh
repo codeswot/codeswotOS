@@ -8,7 +8,7 @@ run_node_test <<'JS'
 const fs = require('fs')
 const menu = requireFromRoot('shell/plugins/menu/MenuModel.js')
 const menuQml = fs.readFileSync(path.join(root, 'shell/plugins/menu/Menu.qml'), 'utf8')
-const defaultMenuJsonc = fs.readFileSync(path.join(root, 'default/omarchy/omarchy-menu.jsonc'), 'utf8')
+const defaultMenuJsonc = fs.readFileSync(path.join(root, 'default/codeswot/codeswot-menu.jsonc'), 'utf8')
 
 const parsed = menu.parseMenuJsonc(`
 {
@@ -20,7 +20,7 @@ const parsed = menu.parseMenuJsonc(`
       "label": "Themes",
       "aliases": "theme",
       "description": "appearance colors",
-      "action": "omarchy-theme-set"
+      "action": "codeswot-theme-set"
     },
   },
 }
@@ -39,7 +39,7 @@ assertDeepEqual(
     title: '',
     target: '',
     description: 'appearance colors',
-    action: 'omarchy-theme-set',
+    action: 'codeswot-theme-set',
     provider: '',
     aliases: ['theme'],
     when: '',
@@ -161,20 +161,20 @@ assertEqual(
 )
 assertEqual(
   defaultById['trigger.emoji'].action,
-  'omarchy-menu-emoji',
+  'codeswot-menu-emoji',
   'menu opens the emoji picker from Trigger'
 )
 assert(
   defaultById['update.omarchy'].icon === '\ue900',
-  'menu update Omarchy entry uses the Omarchy glyph'
+  'menu update codeswotOS entry uses the codeswotOS glyph'
 )
 assert(
   defaultById['update.omarchy'].iconFont === 'omarchy',
-  'menu update Omarchy entry renders the private glyph with the Omarchy font'
+  'menu update codeswotOS entry renders the private glyph with the codeswotOS font'
 )
 assertEqual(
   defaultById['update.themes'].when,
-  'omarchy-theme-extras',
+  'codeswot-theme-extras',
   'menu hides Extra Themes until a theme cloned from git is there to update'
 )
 assert(
@@ -182,11 +182,11 @@ assert(
   'menu keeps Input as a direct config action'
 )
 assert(
-  defaultById['setup.direct-boot'].action.includes('omarchy-setup-direct-boot'),
+  defaultById['setup.direct-boot'].action.includes('codeswot-setup-direct-boot'),
   'menu places Direct Boot directly under Setup'
 )
 assert(
-  defaultById['setup.reset'].action.includes('omarchy-system-factory-reset'),
+  defaultById['setup.reset'].action.includes('codeswot-system-factory-reset'),
   'menu exposes Reset Computer under Setup'
 )
 const setupEntries = defaultItems.filter(item => item.parent === 'setup')
@@ -218,7 +218,7 @@ assert(
       && entry.icon === expected.icon
       && entry.iconFont === (expected.iconFont || '')
       && entry.label === expected.label
-      && entry.action === `omarchy-default-agent ${agent}`
+      && entry.action === `codeswot-default-agent ${agent}`
       && !entry.when
       && entry.checked.includes(`== \"${agent}\"`)
   }),
@@ -233,7 +233,7 @@ assertDeepEqual(
 )
 assert(!defaultById['install.ai.crush'], 'menu removes Crush from Install > AI')
 assert(
-  defaultById['setup.security.passwordless-sudo'].action.includes('omarchy-sudo-passwordless'),
+  defaultById['setup.security.passwordless-sudo'].action.includes('codeswot-sudo-passwordless'),
   'menu places Passwordless Sudo under Setup > Security'
 )
 assert(
@@ -245,12 +245,12 @@ assert(
   'menu groups Menu Bar positions in a submenu'
 )
 assert(
-  ['top', 'bottom', 'left', 'right'].every(position => defaultById[`style.bar.position.${position}`].action === `omarchy-bar position ${position}`),
+  ['top', 'bottom', 'left', 'right'].every(position => defaultById[`style.bar.position.${position}`].action === `codeswot-bar position ${position}`),
   'menu lists all Menu Bar positions under Position'
 )
 assertEqual(
   defaultById['style.bar.transparency'].action,
-  'omarchy-bar transparent toggle',
+  'codeswot-bar transparent toggle',
   'menu exposes Menu Bar transparency as a toggle'
 )
 assertDeepEqual(
@@ -260,7 +260,7 @@ assertDeepEqual(
 )
 assert(
   ['enable', 'disable', 'clone', 'remove'].every(
-    verb => defaultById[`setup.plugin.${verb}`].action === `omarchy-menu-plugin ${verb}`
+    verb => defaultById[`setup.plugin.${verb}`].action === `codeswot-menu-plugin ${verb}`
   ),
   'menu picks a plugin the way it already picks a theme or a timezone'
 )
@@ -269,15 +269,15 @@ assert(
   'menu always offers Enable and Disable, which cover the built-in plugins too'
 )
 assert(
-  defaultById['setup.plugin.remove'].when.includes('.config/omarchy/plugins'),
+  defaultById['setup.plugin.remove'].when.includes('.config/codeswot/plugins'),
   'menu hides Remove until a plugin the user installed exists to delete'
 )
 assert(
-  defaultById['setup.plugin.add'].action.includes('omarchy-plugin-add'),
+  defaultById['setup.plugin.add'].action.includes('codeswot-plugin-add'),
   'menu adds a plugin through the CLI, where the trust warning and clone output are visible'
 )
 
-const pluginPicker = fs.readFileSync(path.join(root, 'bin/omarchy-menu-plugin'), 'utf8')
+const pluginPicker = fs.readFileSync(path.join(root, 'bin/codeswot-menu-plugin'), 'utf8')
 assert(
   /enable\).*\(\.enabled \| not\)/.test(pluginPicker) && /disable\).*\.canDisable and \.enabled/.test(pluginPicker),
   'plugin picker offers what each verb can act on'
@@ -289,11 +289,11 @@ assert(
   'plugin picker leaves plugin-kind decisions to its data and the plugin command'
 )
 
-const pluginAdd = fs.readFileSync(path.join(root, 'bin/omarchy-plugin-add'), 'utf8')
-const pluginEnable = fs.readFileSync(path.join(root, 'bin/omarchy-plugin-enable'), 'utf8')
+const pluginAdd = fs.readFileSync(path.join(root, 'bin/codeswot-plugin-add'), 'utf8')
+const pluginEnable = fs.readFileSync(path.join(root, 'bin/codeswot-plugin-enable'), 'utf8')
 assert(
   /Now using \$id as the bar/.test(pluginEnable)
-    && /omarchy-plugin-enable "\$id" "\$\{ENABLE_PLACEMENT\[@\]\}"/.test(pluginAdd),
+    && /codeswot-plugin-enable "\$id" "\$\{ENABLE_PLACEMENT\[@\]\}"/.test(pluginAdd),
   'plugin enable reports a bar as replacing the one in use, whether enabled or freshly added'
 )
 assert(
@@ -302,7 +302,7 @@ assert(
   'interactive plugin add selects the manifest placement or center fallback by default'
 )
 assert(
-  /"omarchy-plugin-\$1" "\$id"/.test(pluginPicker),
+  /"codeswot-plugin-\$1" "\$id"/.test(pluginPicker),
   'plugin picker delegates enable and disable without interpreting plugin kinds'
 )
 // Icons ride along as "<glyph>\tlabel\tsubtext"; the menu shows the glyph,
@@ -319,7 +319,7 @@ assert(
   'menu select mode reads a leading icon and a trailing subtext off an option'
 )
 assert(
-  /omarchy-launch-floating-terminal-with-presentation "omarchy-plugin-remove/.test(pluginPicker),
+  /codeswot-launch-floating-terminal-with-presentation "codeswot-plugin-remove/.test(pluginPicker),
   'plugin picker removes where the confirmation and backup path are visible'
 )
 
@@ -342,17 +342,17 @@ assert(
 )
 assertEqual(
   defaultById['trigger.hardware.laptop-display'].when,
-  'omarchy-hw-laptop',
+  'codeswot-hw-laptop',
   'menu only shows Laptop Display on laptops'
 )
 assertEqual(
   defaultById['trigger.hardware.mirror-display'].when,
-  'omarchy-hw-laptop',
+  'codeswot-hw-laptop',
   'menu only shows Mirror Display on laptops'
 )
 assertEqual(
   defaultById['trigger.capture.screenrecord.webcam'].when,
-  'omarchy-hw-webcam',
+  'codeswot-hw-webcam',
   'menu only shows webcam screen recording when a webcam is available'
 )
 assert(
@@ -519,5 +519,5 @@ assert(
 JS
 
 font_charset=$(fc-query --format='%{charset}' "$ROOT/default/fonts/omarchy/omarchy.ttf")
-[[ $font_charset == *"e900-e908 e90a-e90d"* ]] || fail "Omarchy icon font includes every custom menu glyph"
-pass "Omarchy icon font includes the official agent marks"
+[[ $font_charset == *"e900-e908 e90a-e90d"* ]] || fail "codeswotOS icon font includes every custom menu glyph"
+pass "codeswotOS icon font includes the official agent marks"

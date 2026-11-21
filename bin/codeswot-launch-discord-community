@@ -1,0 +1,11 @@
+#!/bin/bash
+
+# codeswot:summary=Open the codeswotOS Discord community in the Discord app or a browser.
+
+invite="https://discord.gg/tXFUdasqhY"
+
+if codeswot-cmd-present discord; then
+  exec setsid uwsm-app -- discord --url -- "discord://-/invite/${invite##*/}"
+else
+  exec codeswot-launch-webapp "$invite"
+fi

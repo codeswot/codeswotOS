@@ -36,7 +36,7 @@ BarWidget {
 
   // Submenu drill-down state. QsMenuEntry.display() renders a *platform* menu,
   // which Quickshell refuses unless the shell root sets `//@ pragma
-  // UseQApplication` - omarchy's shell.qml does not, so every submenu click was
+  // UseQApplication` - codeswot's shell.qml does not, so every submenu click was
   // a silent no-op ("Cannot display PlatformMenuEntry as quickshell was not
   // started in QApplication mode" in the shell log) and apps whose whole UI is
   // submenus, e.g. radiotray-ng's station list, were unusable. QsMenuEntry

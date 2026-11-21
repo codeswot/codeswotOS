@@ -1,0 +1,10 @@
+#!/bin/bash
+
+# codeswot:summary=Wake displays and restore brightness after idle
+# codeswot:group=system
+# codeswot:name=wake
+# codeswot:examples=codeswot system wake
+
+codeswot-brightness-display on
+codeswot-brightness-keyboard restore
+codeswot-hyprland-monitor-clamshell >/dev/null 2>&1 || true

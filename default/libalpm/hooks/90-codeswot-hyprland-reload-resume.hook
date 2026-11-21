@@ -1,0 +1,12 @@
+[Trigger]
+Operation = Install
+Operation = Upgrade
+Type = Package
+Target = codeswot-settings
+Target = codeswot-settings-dev
+
+[Action]
+Description = Reloading Hyprland after codeswotOS settings update...
+When = PostTransaction
+Depends = codeswot
+Exec = /usr/bin/codeswot-hyprland-reload-guard resume

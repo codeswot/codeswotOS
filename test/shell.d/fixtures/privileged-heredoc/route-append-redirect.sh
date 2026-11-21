@@ -1,3 +1,3 @@
-cat >>/etc/omarchy/agent.conf <<EOF
-helper=$HOME/.local/share/omarchy/bin/omarchy-agent
+cat >>/etc/codeswot/agent.conf <<EOF
+helper=$HOME/.local/share/codeswot/bin/codeswot-agent
 EOF

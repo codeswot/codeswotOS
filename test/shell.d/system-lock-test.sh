@@ -11,7 +11,7 @@ mock_bin="$tmpdir/bin"
 call_log="$tmpdir/calls"
 mkdir -p "$mock_bin"
 
-for command in omarchy-shell hyprctl pkill timeout; do
+for command in codeswot-shell hyprctl pkill timeout; do
   cat >"$mock_bin/$command" <<'SH'
 #!/bin/bash
 printf '%s %s\n' "$(basename "$0")" "$*" >>"$CALL_LOG"
@@ -24,7 +24,7 @@ exit 1
 SH
 chmod +x "$mock_bin"/*
 
-PATH="$mock_bin:$PATH" CALL_LOG="$call_log" "$ROOT/bin/omarchy-system-lock"
+PATH="$mock_bin:$PATH" CALL_LOG="$call_log" "$ROOT/bin/codeswot-system-lock"
 mapfile -t shutdown < <(rg '^(pkill|timeout) ' "$call_log")
 
 [[ ${shutdown[0]} == "pkill -x ttfx" ]] ||

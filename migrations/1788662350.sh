@@ -2,11 +2,11 @@ echo "Repair user-owned system-sleep hooks and hybrid GPU service configuration"
 
 system_sleep_dir=/usr/lib/systemd/system-sleep
 supergfxd_drop_in=/etc/systemd/system/supergfxd.service.d/delay-start.conf
-quarantine_root=/var/lib/omarchy/migrations/1788662350-system-sleep
-reload_needed_marker=/var/lib/omarchy/migrations/1788662350-systemd-reload-needed
-keyboard_source="$OMARCHY_PATH/default/systemd/system-sleep/keyboard-backlight"
-force_igpu_source="$OMARCHY_PATH/default/systemd/system-sleep/force-igpu"
-supergfxd_source="$OMARCHY_PATH/default/systemd/system/supergfxd.service.d/delay-start.conf"
+quarantine_root=/var/lib/codeswot/migrations/1788662350-system-sleep
+reload_needed_marker=/var/lib/codeswot/migrations/1788662350-systemd-reload-needed
+keyboard_source="$CODESWOT_PATH/default/systemd/system-sleep/keyboard-backlight"
+force_igpu_source="$CODESWOT_PATH/default/systemd/system-sleep/force-igpu"
+supergfxd_source="$CODESWOT_PATH/default/systemd/system/supergfxd.service.d/delay-start.conf"
 legacy_keyboard_sha256=f313a81e47401f0d38b8602e5997f52c5286d5e97f74027564ddd515b3d16511
 legacy_force_igpu_sha256=d604e7c4903829563e45fc52188fc5602c3f1bc66e247f0a2cc0a974ed6e57db
 

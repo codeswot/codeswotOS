@@ -12,15 +12,15 @@ trap 'rm -rf "$TMPDIR"' EXIT
 STUB_DIR="$TMPDIR/stub"
 mkdir -p "$STUB_DIR"
 
-# The picker reads the plugin list from omarchy-plugin-list and hands what it
+# The picker reads the plugin list from codeswot-plugin-list and hands what it
 # decided to a verb-specific command, so stubbing both ends shows which plugin
 # a pick actually resolved to -- the thing a source-level check cannot see.
-cat >"$STUB_DIR/omarchy-plugin-list" <<'STUB'
+cat >"$STUB_DIR/codeswot-plugin-list" <<'STUB'
 #!/bin/bash
 cat "$FAKE_PLUGINS"
 STUB
 
-for command in omarchy-plugin-enable omarchy-plugin-disable; do
+for command in codeswot-plugin-enable codeswot-plugin-disable; do
   cat >"$STUB_DIR/$command" <<'STUB'
 #!/bin/bash
 printf '%s %s\n' "${0##*/}" "$*" >>"$FAKE_CALLS"
@@ -28,18 +28,18 @@ STUB
 done
 
 # Records the rows it was offered, then answers with the pick under test.
-cat >"$STUB_DIR/omarchy-menu-select" <<'STUB'
+cat >"$STUB_DIR/codeswot-menu-select" <<'STUB'
 #!/bin/bash
 cat >"$FAKE_ROWS"
 printf '%s\n' "$FAKE_PICK"
 STUB
 
-cat >"$STUB_DIR/omarchy-notification-send" <<'STUB'
+cat >"$STUB_DIR/codeswot-notification-send" <<'STUB'
 #!/bin/bash
 printf 'notification: %s\n' "$*" >>"$FAKE_CALLS"
 STUB
 
-cat >"$STUB_DIR/omarchy-launch-floating-terminal-with-presentation" <<'STUB'
+cat >"$STUB_DIR/codeswot-launch-floating-terminal-with-presentation" <<'STUB'
 #!/bin/bash
 printf 'terminal: %s\n' "$*" >>"$FAKE_CALLS"
 STUB
@@ -59,7 +59,7 @@ pick() {
     FAKE_CALLS="$TMPDIR/calls" \
     FAKE_ROWS="$TMPDIR/rows" \
     FAKE_PICK="$choice" \
-    "$ROOT/bin/omarchy-menu-plugin" "$verb" >/dev/null 2>&1
+    "$ROOT/bin/codeswot-menu-plugin" "$verb" >/dev/null 2>&1
 
   ROWS=$(cat "$TMPDIR/rows")
   CALLS=$(cat "$TMPDIR/calls")
@@ -78,12 +78,12 @@ pick enable "$(printf 'Clock\ttester.clock')"
 [[ $ROWS == *"$(printf 'Clock\tomarchy.clock')"* && $ROWS == *"$(printf 'Clock\ttester.clock')"* ]] \
   || fail "picker offers the id as subtext on every row" "$ROWS"
 pass "picker offers the id as subtext on every row"
-[[ $CALLS == *"omarchy-plugin-enable tester.clock"* ]] \
+[[ $CALLS == *"codeswot-plugin-enable tester.clock"* ]] \
   || fail "picker acts on the row that was picked, not the one that shares its name" "$CALLS"
 pass "picker acts on the row that was picked, not the one that shares its name"
 
 pick remove "$(printf 'Clock\ttester.clock')"
-[[ $CALLS == *"omarchy-plugin-remove tester.clock"* ]] \
+[[ $CALLS == *"codeswot-plugin-remove tester.clock"* ]] \
   || fail "picker removes the plugin whose row was picked" "$CALLS"
 pass "picker removes the plugin whose row was picked"
 
@@ -94,7 +94,7 @@ cat >"$TMPDIR/plugins.json" <<'JSON'
 JSON
 
 pick enable "$(printf 'Weather\tacme.weather')"
-[[ $CALLS == *"omarchy-plugin-enable acme.weather"* ]] \
+[[ $CALLS == *"codeswot-plugin-enable acme.weather"* ]] \
   || fail "picker delegates plugin enablement to the plugin command" "$CALLS"
 pass "picker delegates plugin enablement to the plugin command"
 
@@ -111,7 +111,7 @@ pick clone "$(printf 'Clock\tomarchy.clock')"
 [[ $ROWS == *"Clock"* && $ROWS != *"Weather"* ]] ||
   fail "clone picker offers only built-in plugins" "$ROWS"
 pass "clone picker offers built-in plugins"
-[[ $CALLS == *"terminal: omarchy-plugin-clone omarchy.clock --edit"* ]] ||
+[[ $CALLS == *"terminal: codeswot-plugin-clone omarchy.clock --edit"* ]] ||
   fail "clone picker delegates cloning and editing to the clone command" "$CALLS"
 pass "clone picker clones and opens the personal plugin"
 
@@ -138,7 +138,7 @@ cat >"$TMPDIR/plugins.json" <<'JSON'
 JSON
 
 pick enable "$(printf 'Fancy\tacme.fancy')"
-[[ $CALLS == *"omarchy-plugin-enable acme.fancy"* && $CALLS != *"--section"* ]] \
+[[ $CALLS == *"codeswot-plugin-enable acme.fancy"* && $CALLS != *"--section"* ]] \
   || fail "picker delegates kind-specific enablement" "$CALLS"
 pass "picker delegates kind-specific enablement"
 
@@ -168,7 +168,7 @@ pick enable "$(printf 'Bar\tomarchy.bar')"
 [[ $ROWS == *"Bar"* && $ROWS != *"Neon Bar"* ]] \
   || fail "picker offers every bar except the one already running" "$ROWS"
 pass "picker offers every bar except the one already running"
-[[ $CALLS == *"omarchy-plugin-enable omarchy.bar"* ]] \
+[[ $CALLS == *"codeswot-plugin-enable omarchy.bar"* ]] \
   || fail "picker returns to the built-in bar by enabling it" "$CALLS"
 pass "picker returns to the built-in bar by enabling it"
 

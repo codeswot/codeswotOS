@@ -34,8 +34,8 @@ class StatusNotifierItem(dbus.service.Object):
 
     return dbus.Dictionary({
       "Category": "ApplicationStatus",
-      "Id": "omarchy-test-tray",
-      "Title": "omarchy-test-tray",
+      "Id": "codeswot-test-tray",
+      "Title": "codeswot-test-tray",
       "Status": "Active",
       "WindowId": dbus.Int32(0),
       "IconName": "dialog-information",
@@ -45,7 +45,7 @@ class StatusNotifierItem(dbus.service.Object):
       "ToolTip": dbus.Struct((
         "",
         dbus.Array([], signature="(iiay)"),
-        "omarchy-test-tray",
+        "codeswot-test-tray",
         "",
       ), signature=None),
     }, signature="sv")
@@ -157,8 +157,8 @@ def main():
 
 
 def run():
-  event_path = os.environ["OMARCHY_TRAY_MENU_EVENT_RESULT"]
-  ready_path = os.environ["OMARCHY_TRAY_MENU_READY"]
+  event_path = os.environ["CODESWOT_TRAY_MENU_EVENT_RESULT"]
+  ready_path = os.environ["CODESWOT_TRAY_MENU_READY"]
 
   DBusGMainLoop(set_as_default=True)
   bus = dbus.SessionBus()

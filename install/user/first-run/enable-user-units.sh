@@ -14,8 +14,8 @@ set -euo pipefail
 systemctl --user daemon-reload
 systemctl --user enable --now \
   bt-agent.service \
-  omarchy-recover-internal-monitor.service \
-  omarchy-sleep-lock.service \
-  omarchy-migrate-notify.service \
-  omarchy-fcitx5.service \
-  omarchy-crash-watch.service
+  codeswot-recover-internal-monitor.service \
+  codeswot-sleep-lock.service \
+  codeswot-migrate-notify.service \
+  codeswot-fcitx5.service \
+  codeswot-crash-watch.service

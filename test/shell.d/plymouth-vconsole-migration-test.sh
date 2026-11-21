@@ -23,7 +23,7 @@ cat >"$stub_bin/limine-mkinitcpio" <<'STUB'
 #!/bin/bash
 echo rebuilt >>"${REBUILDS:?}"
 [[ -z ${REBUILD_FAILS:-} ]] || exit 1
-[[ -z ${REBUILD_SKIPS:-} ]] || echo "==> ERROR: mkinitcpio failed for kernel 7.2.5-3-omarchy, skipping."
+[[ -z ${REBUILD_SKIPS:-} ]] || echo "==> ERROR: mkinitcpio failed for kernel 7.2.5-3-codeswot, skipping."
 STUB
 chmod +x "$stub_bin"/*
 
@@ -53,8 +53,8 @@ run() { # vconsole.conf content, plymouth hook
     rm -f "$vconsole"
   fi
   PATH="$stub_bin:$ROOT/bin:$PATH" REBUILDS="$test_dir/rebuilds" \
-    OMARCHY_MKINITCPIO_CONF="$mkinitcpio_conf" OMARCHY_MKINITCPIO_CONF_DIR="$test_dir/conf.d" \
-    OMARCHY_VCONSOLE_CONF="$vconsole" OMARCHY_PLYMOUTH_INSTALL_HOOK="$2" OMARCHY_VCONSOLE_REBUILD_MARKER="$test_dir/marker" \
+    CODESWOT_MKINITCPIO_CONF="$mkinitcpio_conf" CODESWOT_MKINITCPIO_CONF_DIR="$test_dir/conf.d" \
+    CODESWOT_VCONSOLE_CONF="$vconsole" CODESWOT_PLYMOUTH_INSTALL_HOOK="$2" CODESWOT_VCONSOLE_REBUILD_MARKER="$test_dir/marker" \
     bash -euo pipefail "$migration" >/dev/null 2>&1
 }
 rebuilds() { wc -l <"$test_dir/rebuilds"; }
@@ -62,7 +62,7 @@ rebuilds() { wc -l <"$test_dir/rebuilds"; }
 russian=$'KEYMAP=ru\nXKBLAYOUT=ru,us'
 new_conf_dir
 
-# omarchy-migrate runs a migration with bash -euo pipefail, and so does run:
+# codeswot-migrate runs a migration with bash -euo pipefail, and so does run:
 # that is what stops a failed rebuild before the marker is written.
 if REBUILD_FAILS=1 run "$russian" "$test_dir/plymouth-new"; then
   fail "a rebuild that failed was reported as a success"
@@ -145,8 +145,8 @@ for tool in bash grep install cat mktemp tee rm; do ln -s "$(command -v "$tool")
 printf '%s\n' "$russian" >"$vconsole"
 : >"$test_dir/rebuilds"
 PATH="$stub_bin:$ROOT/bin:$test_dir/tools" REBUILDS="$test_dir/rebuilds" \
-  OMARCHY_MKINITCPIO_CONF_DIR="$test_dir/conf.d" OMARCHY_VCONSOLE_CONF="$vconsole" \
-  OMARCHY_PLYMOUTH_INSTALL_HOOK="$test_dir/plymouth-new" OMARCHY_VCONSOLE_REBUILD_MARKER="$test_dir/marker" \
+  CODESWOT_MKINITCPIO_CONF_DIR="$test_dir/conf.d" CODESWOT_VCONSOLE_CONF="$vconsole" \
+  CODESWOT_PLYMOUTH_INSTALL_HOOK="$test_dir/plymouth-new" CODESWOT_VCONSOLE_REBUILD_MARKER="$test_dir/marker" \
   "$test_dir/tools/bash" -euo pipefail "$migration" >/dev/null
 (( $(rebuilds) == 0 )) && [[ ! -e $test_dir/marker ]] || fail "a machine without Limine was rebuilt"
 pass "a machine without Limine is left alone"

@@ -1,0 +1,5 @@
+#!/bin/bash
+
+# codeswot:summary=Reload hyprland configuration (used by the codeswotOS theme switching).
+
+hyprctl reload >/dev/null

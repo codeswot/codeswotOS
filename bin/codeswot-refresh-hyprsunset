@@ -1,0 +1,6 @@
+#!/bin/bash
+
+# codeswot:summary=Overwrite the user config for hyprsunset with the codeswotOS default and restart the service.
+
+codeswot-refresh-config hypr/hyprsunset.conf
+codeswot-restart-hyprsunset

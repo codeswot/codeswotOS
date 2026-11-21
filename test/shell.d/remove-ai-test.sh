@@ -9,13 +9,13 @@ trap 'rm -rf "$tmp_dir"' EXIT
 
 mkdir -p "$tmp_dir/bin"
 
-cat >"$tmp_dir/bin/omarchy-pkg-drop" <<'SCRIPT'
+cat >"$tmp_dir/bin/codeswot-pkg-drop" <<'SCRIPT'
 #!/bin/bash
 printf 'drop:%s\n' "$*" >>"$TEST_LOG"
 SCRIPT
-chmod +x "$tmp_dir/bin/omarchy-pkg-drop"
+chmod +x "$tmp_dir/bin/codeswot-pkg-drop"
 
-# omarchy-remove-ai-perplexity asks through gum whether the user's data goes
+# codeswot-remove-ai-perplexity asks through gum whether the user's data goes
 # too. The stub answers "no" unless a test says otherwise and logs the call: a
 # real gum would hang the run, and one that answered "yes" on its own would be
 # the data loss the default-no exists to prevent. It logs to its own file
@@ -44,7 +44,7 @@ fresh_home() {
 fresh_home
 mkdir -p "$HOME/.config/t3code" "$HOME/.t3" "$HOME/.grok" "$HOME/.local/share/opencode" "$HOME/.npm"
 touch "$HOME/.claude.json"
-"$ROOT/bin/omarchy-remove-ai-t3-code" >/dev/null
+"$ROOT/bin/codeswot-remove-ai-t3-code" >/dev/null
 
 [[ ! -e $HOME/.t3 ]] || fail "T3 Code removal deletes its own data"
 pass "T3 Code removal deletes its own data"
@@ -68,7 +68,7 @@ seed_perplexity() {
 # </dev/null pins stdin off a terminal, so this run exercises the
 # non-interactive path no matter where the suite itself is running.
 seed_perplexity
-"$ROOT/bin/omarchy-remove-ai-perplexity" </dev/null >/dev/null
+"$ROOT/bin/codeswot-remove-ai-perplexity" </dev/null >/dev/null
 
 for gone in .cache/Perplexity .cache/perplexity-rpc-server .local/share/perplexity-rpc-server; do
   [[ ! -e $HOME/$gone ]] || fail "Perplexity removal deletes the app's runtime and caches" "$gone"
@@ -91,7 +91,7 @@ pass "Perplexity removal keeps the user's data unasked when there is no terminal
 # script(1) puts the remover on a pty, the only way -t 0 answers true in a
 # test; the stubbed gum then supplies the answer.
 seed_perplexity
-script -qec "'$ROOT/bin/omarchy-remove-ai-perplexity'" /dev/null >/dev/null 2>&1
+script -qec "'$ROOT/bin/codeswot-remove-ai-perplexity'" /dev/null >/dev/null 2>&1
 
 [[ -d $HOME/.config/Perplexity && -d $HOME/.local/state/perplexity && -f $HOME/.config/perplexity-flags.conf ]] ||
   fail "Perplexity removal keeps the user's data when the answer is no"
@@ -107,7 +107,7 @@ pass "Perplexity removal asks with the destructive answer defaulted off"
 # the removal between the package and the prompt.
 seed_perplexity
 rm -rf "$HOME/.config/Perplexity" "$HOME/.local/state/perplexity"
-script -qec "'$ROOT/bin/omarchy-remove-ai-perplexity'" /dev/null >/dev/null 2>&1 ||
+script -qec "'$ROOT/bin/codeswot-remove-ai-perplexity'" /dev/null >/dev/null 2>&1 ||
   fail "Perplexity removal survives user-data directories that are already gone"
 pass "Perplexity removal survives user-data directories that are already gone"
 
@@ -115,14 +115,14 @@ pass "Perplexity removal survives user-data directories that are already gone"
 # invisible, so the remover must keep the data instead of blocking on it.
 seed_perplexity
 gum_calls_before=$(wc -l <"$TEST_GUM_LOG")
-script -qec "'$ROOT/bin/omarchy-remove-ai-perplexity' 2>/dev/null" /dev/null >/dev/null 2>&1 ||
+script -qec "'$ROOT/bin/codeswot-remove-ai-perplexity' 2>/dev/null" /dev/null >/dev/null 2>&1 ||
   fail "Perplexity removal completes when stderr is not a terminal"
 [[ -d $HOME/.config/Perplexity ]] && (( $(wc -l <"$TEST_GUM_LOG") == gum_calls_before )) ||
   fail "Perplexity removal keeps the user's data unasked when stderr is not a terminal"
 pass "Perplexity removal keeps the user's data unasked when stderr is not a terminal"
 
 seed_perplexity
-TEST_GUM_STATUS=0 script -qec "'$ROOT/bin/omarchy-remove-ai-perplexity'" /dev/null >/dev/null 2>&1
+TEST_GUM_STATUS=0 script -qec "'$ROOT/bin/codeswot-remove-ai-perplexity'" /dev/null >/dev/null 2>&1
 
 for gone in .config/Perplexity .local/state/perplexity .config/perplexity-flags.conf; do
   [[ ! -e $HOME/$gone ]] || fail "Perplexity removal deletes the user's data on an explicit yes" "$gone"
@@ -131,7 +131,7 @@ pass "Perplexity removal deletes the user's data on an explicit yes"
 
 # Without HOME the rm -rf paths would degrade to /-rooted ones; -u makes that a
 # refusal instead.
-if env -u HOME "$ROOT/bin/omarchy-remove-ai-perplexity" </dev/null >/dev/null 2>&1; then
+if env -u HOME "$ROOT/bin/codeswot-remove-ai-perplexity" </dev/null >/dev/null 2>&1; then
   fail "Perplexity removal refuses to run without HOME"
 fi
 pass "Perplexity removal refuses to run without HOME"
@@ -158,7 +158,7 @@ fresh_openclaw_home() {
   fresh_home
   mkdir -p "$HOME/.config/systemd/user/default.target.wants" "$HOME/.openclaw" \
     "$HOME/.local/share/applications" "$HOME/.local/share/icons/hicolor/256x256/apps" \
-    "$HOME/.local/state/omarchy/openclaw-stopped"
+    "$HOME/.local/state/codeswot/openclaw-stopped"
   touch "$HOME/.config/systemd/user/openclaw-gateway.service" \
     "$HOME/.config/systemd/user/openclaw-gateway.service.bak" \
     "$HOME/.config/systemd/user/openclaw-gateway.service.reconcile-0f1e.bak" \
@@ -167,7 +167,7 @@ fresh_openclaw_home() {
     "$HOME/.openclaw/openclaw.json" \
     "$HOME/.local/share/applications/OpenClaw.desktop" \
     "$HOME/.local/share/icons/hicolor/256x256/apps/openclaw.png" \
-    "$HOME/.local/state/omarchy/openclaw-stopped/gateway"
+    "$HOME/.local/state/codeswot/openclaw-stopped/gateway"
   ln -s ../openclaw-gateway.service \
     "$HOME/.config/systemd/user/default.target.wants/openclaw-gateway.service"
   ln -s ../openclaw-node.service \
@@ -184,7 +184,7 @@ SCRIPT
 chmod +x "$tmp_dir/bin/gum"
 
 fresh_openclaw_home
-"$ROOT/bin/omarchy-remove-ai-openclaw" >/dev/null
+"$ROOT/bin/codeswot-remove-ai-openclaw" >/dev/null
 
 for gone in .config/systemd/user/openclaw-gateway.service \
   .config/systemd/user/openclaw-gateway.service.bak \
@@ -195,7 +195,7 @@ for gone in .config/systemd/user/openclaw-gateway.service \
   .config/systemd/user/default.target.wants/openclaw-node.service \
   .local/share/applications/OpenClaw.desktop \
   .local/share/icons/hicolor/256x256/apps/openclaw.png \
-  .local/state/omarchy/openclaw-stopped; do
+  .local/state/codeswot/openclaw-stopped; do
   [[ ! -e $HOME/$gone && ! -L $HOME/$gone ]] || fail "OpenClaw removal deletes the service and launcher it installed" "$gone"
 done
 pass "OpenClaw removal deletes the service and launcher it installed"
@@ -218,12 +218,12 @@ pass "OpenClaw removal stops the gateway service"
 pass "OpenClaw removal keeps the user's agent state"
 
 # The command on PATH goes; the OpenClaw it pointed at stays with the state,
-# since only that copy is sure to open it. A link somewhere else is not Omarchy's.
+# since only that copy is sure to open it. A link somewhere else is not codeswotOS's.
 fresh_openclaw_home
 mkdir -p "$HOME/.openclaw/bin" "$HOME/.openclaw/tools/node-v24.19.0/lib" "$HOME/.local/bin"
 printf '#!/usr/bin/env bash\n' >"$HOME/.openclaw/bin/openclaw"
 ln -s "$HOME/.openclaw/bin/openclaw" "$HOME/.local/bin/openclaw"
-"$ROOT/bin/omarchy-remove-ai-openclaw" >/dev/null
+"$ROOT/bin/codeswot-remove-ai-openclaw" >/dev/null
 [[ ! -e $HOME/.local/bin/openclaw && ! -L $HOME/.local/bin/openclaw ]] || fail "OpenClaw removal takes openclaw off PATH"
 [[ -f $HOME/.openclaw/bin/openclaw && -d $HOME/.openclaw/tools && -f $HOME/.openclaw/openclaw.json ]] ||
   fail "OpenClaw removal keeps the OpenClaw that can open the state"
@@ -231,7 +231,7 @@ ln -s "$HOME/.openclaw/bin/openclaw" "$HOME/.local/bin/openclaw"
 fresh_openclaw_home
 mkdir -p "$HOME/.local/bin"
 ln -s /opt/openclaw/openclaw "$HOME/.local/bin/openclaw"
-"$ROOT/bin/omarchy-remove-ai-openclaw" >/dev/null
+"$ROOT/bin/codeswot-remove-ai-openclaw" >/dev/null
 [[ -L $HOME/.local/bin/openclaw ]] || fail "OpenClaw removal takes openclaw off PATH" "someone else's link went with it"
 pass "OpenClaw removal takes openclaw off PATH and keeps the copy that can open the state"
 
@@ -247,7 +247,7 @@ chmod +x "$tmp_dir/bin/openclaw"
 
 : >"$TEST_LOG"
 fresh_openclaw_home
-"$ROOT/bin/omarchy-remove-ai-openclaw" >/dev/null
+"$ROOT/bin/codeswot-remove-ai-openclaw" >/dev/null
 
 grep -q '^openclaw:gateway uninstall$' "$TEST_LOG" ||
   fail "OpenClaw removal prefers upstream's own gateway teardown"
@@ -260,7 +260,7 @@ pass "OpenClaw removal prefers upstream's own gateway teardown"
 # Without the unit file there is nothing of ours registered, so systemd stays untouched.
 systemctl_calls_before=$(grep -c '^systemctl:' "$TEST_LOG" || true)
 fresh_home
-"$ROOT/bin/omarchy-remove-ai-openclaw" >/dev/null
+"$ROOT/bin/codeswot-remove-ai-openclaw" >/dev/null
 systemctl_calls_after=$(grep -c '^systemctl:' "$TEST_LOG" || true)
 
 [[ $systemctl_calls_before == "$systemctl_calls_after" ]] ||
@@ -287,7 +287,7 @@ chmod +x "$tmp_dir/bin/systemctl"
 drop_calls_before=$(grep -c '^drop:openclaw$' "$TEST_LOG" || true)
 fresh_openclaw_home
 rc=0
-"$ROOT/bin/omarchy-remove-ai-openclaw" >/dev/null 2>&1 || rc=$?
+"$ROOT/bin/codeswot-remove-ai-openclaw" >/dev/null 2>&1 || rc=$?
 drop_calls_after=$(grep -c '^drop:openclaw$' "$TEST_LOG" || true)
 
 [[ $rc != 0 ]] || fail "OpenClaw removal aborts when the gateway cannot be stopped"
@@ -310,7 +310,7 @@ chmod +x "$tmp_dir/bin/systemctl"
 : >"$TEST_LOG"
 fresh_openclaw_home
 rc=0
-"$ROOT/bin/omarchy-remove-ai-openclaw" >/dev/null 2>&1 || rc=$?
+"$ROOT/bin/codeswot-remove-ai-openclaw" >/dev/null 2>&1 || rc=$?
 
 [[ $rc != 0 ]] || fail "OpenClaw removal aborts when systemd cannot be reached"
 [[ -f $HOME/.config/systemd/user/openclaw-gateway.service ]] ||
@@ -327,13 +327,13 @@ cat >"$tmp_dir/bin/systemctl" <<'SCRIPT'
 printf 'systemctl:%s\n' "$*" >>"$TEST_LOG"
 SCRIPT
 chmod +x "$tmp_dir/bin/systemctl"
-mv "$tmp_dir/bin/omarchy-pkg-drop" "$tmp_dir/omarchy-pkg-drop.real"
-printf '#!/bin/bash\nexit 1\n' >"$tmp_dir/bin/omarchy-pkg-drop"
-chmod +x "$tmp_dir/bin/omarchy-pkg-drop"
-if "$ROOT/bin/omarchy-remove-ai-openclaw" >/dev/null 2>&1; then
+mv "$tmp_dir/bin/codeswot-pkg-drop" "$tmp_dir/codeswot-pkg-drop.real"
+printf '#!/bin/bash\nexit 1\n' >"$tmp_dir/bin/codeswot-pkg-drop"
+chmod +x "$tmp_dir/bin/codeswot-pkg-drop"
+if "$ROOT/bin/codeswot-remove-ai-openclaw" >/dev/null 2>&1; then
   fail "OpenClaw removal fails when the package cannot be dropped"
 fi
-[[ ! -e $HOME/.local/state/omarchy/openclaw-stopped/gateway ]] ||
+[[ ! -e $HOME/.local/state/codeswot/openclaw-stopped/gateway ]] ||
   fail "OpenClaw removal drops a service's restart record with the service, before anything else can fail"
-mv "$tmp_dir/omarchy-pkg-drop.real" "$tmp_dir/bin/omarchy-pkg-drop"
+mv "$tmp_dir/codeswot-pkg-drop.real" "$tmp_dir/bin/codeswot-pkg-drop"
 pass "OpenClaw removal drops a service's restart record with the service, before anything else can fail"

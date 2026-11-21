@@ -1,22 +1,22 @@
-# Omarchy bar
+# codeswotOS bar
 
-This is the Quickshell implementation of the Omarchy status bar. It is
-shipped as a first-party plugin of [`omarchy-shell`](../../README.md), the
+This is the Quickshell implementation of the codeswotOS status bar. It is
+shipped as a first-party plugin of [`codeswot-shell`](../../README.md), the
 long-running shell host. The bar is mounted at startup and lives inside
 the shell for its whole session.
 
 - `manifest.json` declares the plugin (`id: omarchy.bar`, `kind: bar`) and points at `Bar.qml` as the entry point.
-- `Bar.qml` is Omarchy-owned bar engine code, loaded by the omarchy-shell host. Users should not edit it directly.
+- `Bar.qml` is codeswotOS-owned bar engine code, loaded by the codeswot-shell host. Users should not edit it directly.
 - `widgets/` holds simple first-party bar widgets with sibling manifests.
 - Feature plugins such as `../panels/audio/`, `../panels/network/`, `../panels/power/`, and `../agents/` provide richer popup bar plugins.
-- The bar receives its config from the host shell as a `barConfig` property; the host loads it from `~/.config/omarchy/shell.json` (or `config/omarchy/shell.json` when the user has no file).
-- `omarchy bar position` updates only the user shell.json file.
+- The bar receives its config from the host shell as a `barConfig` property; the host loads it from `~/.config/codeswot/shell.json` (or `config/codeswot/shell.json` when the user has no file).
+- `codeswot bar position` updates only the user shell.json file.
 
 ## Customizing
 
-The bar config lives under the `bar:` key of [`~/.config/omarchy/shell.json`](../../README.md#shelljson-shape). Out of the box the shell uses [`config/omarchy/shell.json`](../../../config/omarchy/shell.json). Once you customize anything via the bar gestures, `omarchy bar ...`, or by editing shell.json directly, your file is canonical — there is no deep-merge.
+The bar config lives under the `bar:` key of [`~/.config/codeswot/shell.json`](../../README.md#shelljson-shape). Out of the box the shell uses [`config/codeswot/shell.json`](../../../config/codeswot/shell.json). Once you customize anything via the bar gestures, `codeswot bar ...`, or by editing shell.json directly, your file is canonical — there is no deep-merge.
 
-The bar is configured directly on the bar itself: drag empty bar space (or click-and-hold) to move the bar to another screen edge, double-left-click empty center-bar space to toggle transparency, and drag widgets to reorder them. The `omarchy bar position`, `omarchy bar transparent`, `omarchy bar move`, and `omarchy bar set` commands do the same from scripts. Enable or disable widgets with `omarchy plugin enable` and `omarchy plugin disable` (widget ids come from `omarchy plugin list`).
+The bar is configured directly on the bar itself: drag empty bar space (or click-and-hold) to move the bar to another screen edge, double-left-click empty center-bar space to toggle transparency, and drag widgets to reorder them. The `codeswot bar position`, `codeswot bar transparent`, `codeswot bar move`, and `codeswot bar set` commands do the same from scripts. Enable or disable widgets with `codeswot plugin enable` and `codeswot plugin disable` (widget ids come from `codeswot plugin list`).
 
 Example `shell.json` (bar subtree only shown):
 
@@ -54,7 +54,7 @@ Example `shell.json` (bar subtree only shown):
 
 | Name | What it does | Interactions |
 |---|---|---|
-| `omarchy.menu` | Omarchy menu launcher | left = menu · right = terminal |
+| `omarchy.menu` | codeswotOS menu launcher | left = menu · right = terminal |
 | `omarchy.workspaces` | Hyprland workspace switcher | left = focus workspace |
 | `omarchy.clock` | Date/time label + popup with a month grid, ISO week numbers, and month stepping | left = popup · right = cycle label format · middle = timezone selector |
 | `omarchy.media` | MPRIS now-playing — scrolling track + artist, cover-art popup | left = play/pause · middle = next · scroll = prev/next · right = popup |
@@ -91,7 +91,7 @@ Command module:
     "layout": {
       "right": [
         { "id": "omarchy.tray" },
-        { "id": "vpn", "type": "command", "exec": "~/.config/omarchy/bar/scripts/vpn-status", "interval": 5, "tooltip": "VPN", "onClick": "nm-connection-editor" },
+        { "id": "vpn", "type": "command", "exec": "~/.config/codeswot/bar/scripts/vpn-status", "interval": 5, "tooltip": "VPN", "onClick": "nm-connection-editor" },
         { "id": "omarchy.audio" }
       ]
     }
@@ -121,7 +121,7 @@ QML module:
 }
 ```
 
-Then create `~/.config/omarchy/bar/modules/gpu.qml`. If you want to store it elsewhere, add a `source` path.
+Then create `~/.config/codeswot/bar/modules/gpu.qml`. If you want to store it elsewhere, add a `source` path.
 
 Custom QML modules should be an `Item` with `implicitWidth` and `implicitHeight`. They may optionally define these properties, which the bar fills after loading:
 
@@ -146,7 +146,7 @@ Item {
 
   MouseArea {
     anchors.fill: parent
-    onClicked: if (bar) bar.run("omarchy-launch-or-focus-tui btop")
+    onClicked: if (bar) bar.run("codeswot-launch-or-focus-tui btop")
   }
 }
 ```
@@ -176,8 +176,8 @@ richer popup plugins live in feature directories such as `../panels/audio/`,
 namespaced ids.
 
 Third-party widgets ship as separate plugins under
-`~/.config/omarchy/plugins/<plugin-id>/` with their own `manifest.json`
+`~/.config/codeswot/plugins/<plugin-id>/` with their own `manifest.json`
 declaring `kinds: ["bar-widget"]` and a `barWidget` entry point. See
 [../../README.md](../../README.md) for the manifest schema. Rescan, enable,
-and place third-party plugins with `omarchy-shell shell rescanPlugins`,
-`omarchy plugin enable`, and `omarchy bar move`.
+and place third-party plugins with `codeswot-shell shell rescanPlugins`,
+`codeswot plugin enable`, and `codeswot bar move`.

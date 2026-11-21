@@ -17,7 +17,7 @@ BarWidget {
   function clear() { updateAvailable = false }
 
   function runUpdate() {
-    if (root.bar) root.bar.run("omarchy-launch-floating-terminal-with-presentation omarchy-update")
+    if (root.bar) root.bar.run("codeswot-launch-floating-terminal-with-presentation codeswot-update")
   }
 
   visible: updateAvailable
@@ -38,7 +38,7 @@ BarWidget {
 
   Process {
     id: updateProc
-    command: ["omarchy-update-available"]
+    command: ["codeswot-update-available"]
     onExited: function(exitCode) {
       root.updateAvailable = exitCode === 0
     }
@@ -59,7 +59,7 @@ BarWidget {
     text: "\uf021"
     slotSize: Style.bar.statusSlot
     fontSize: Style.font.caption
-    tooltipText: "Pending Omarchy Updates"
+    tooltipText: "Pending codeswotOS Updates"
     onPressed: root.runUpdate()
   }
 }

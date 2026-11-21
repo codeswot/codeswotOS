@@ -1,0 +1,6 @@
+#!/bin/bash
+
+# codeswot:summary=Enable, disable, or toggle the touchpad
+# codeswot:args=[on|off|toggle]
+
+exec codeswot-toggle-input-device touchpad "${1:-toggle}"

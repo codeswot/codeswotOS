@@ -8,13 +8,13 @@ echo "Rebuild the boot image so a non-Latin keyboard layout stays out of the LUK
 # rebuilds the boot image when a drop-in changes, so an image built since
 # plymouth updated still holds it.
 
-mkinitcpio_conf="${OMARCHY_MKINITCPIO_CONF:-/etc/mkinitcpio.conf}"
-conf_dir="${OMARCHY_MKINITCPIO_CONF_DIR:-/etc/mkinitcpio.conf.d}"
-vconsole_conf="${OMARCHY_VCONSOLE_CONF:-/etc/vconsole.conf}"
-plymouth_hook="${OMARCHY_PLYMOUTH_INSTALL_HOOK:-/usr/lib/initcpio/install/plymouth}"
-rebuild_marker="${OMARCHY_VCONSOLE_REBUILD_MARKER:-/var/lib/omarchy/migrations/1791621765}"
+mkinitcpio_conf="${CODESWOT_MKINITCPIO_CONF:-/etc/mkinitcpio.conf}"
+conf_dir="${CODESWOT_MKINITCPIO_CONF_DIR:-/etc/mkinitcpio.conf.d}"
+vconsole_conf="${CODESWOT_VCONSOLE_CONF:-/etc/vconsole.conf}"
+plymouth_hook="${CODESWOT_PLYMOUTH_INSTALL_HOOK:-/usr/lib/initcpio/install/plymouth}"
+rebuild_marker="${CODESWOT_VCONSOLE_REBUILD_MARKER:-/var/lib/codeswot/migrations/1791621765}"
 
-omarchy-cmd-present limine-mkinitcpio || exit 0
+codeswot-cmd-present limine-mkinitcpio || exit 0
 [[ -f $plymouth_hook ]] || exit 0
 
 # The rebuild is machine-wide: another user's migration must not repeat it.
@@ -42,7 +42,7 @@ sudo limine-mkinitcpio 2>&1 | tee "$rebuild_log"
 # limine-mkinitcpio reports a kernel it could not rebuild and still exits 0.
 # That kernel's image keeps the file, so the migration stays pending.
 if grep -q 'mkinitcpio failed for kernel' "$rebuild_log"; then
-  echo "A boot image was not rebuilt. Fix the error above, then run omarchy-migrate again before rebooting." >&2
+  echo "A boot image was not rebuilt. Fix the error above, then run codeswot-migrate again before rebooting." >&2
   exit 1
 fi
 

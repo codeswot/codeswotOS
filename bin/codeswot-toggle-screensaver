@@ -1,0 +1,11 @@
+#!/bin/bash
+
+# codeswot:summary=Toggle screensaver availability
+
+codeswot-toggle screensaver-off
+
+if codeswot-toggle-enabled screensaver-off; then
+  codeswot-notification-send -g 󱄄 "Screensaver disabled"
+else
+  codeswot-notification-send -g 󱄄 "Screensaver enabled"
+fi

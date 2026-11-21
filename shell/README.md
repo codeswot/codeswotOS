@@ -1,7 +1,7 @@
-# Omarchy shell
+# codeswotOS shell
 
-`omarchy-shell` is a single long-running [Quickshell](https://quickshell.org/)
-instance that hosts the Omarchy desktop. Hyprland autostart launches one shell
+`codeswot-shell` is a single long-running [Quickshell](https://quickshell.org/)
+instance that hosts the codeswotOS desktop. Hyprland autostart launches one shell
 per graphical session; everything else — the bar, background switcher, panels,
 and overlays — runs **inside** the shell as a plugin.
 
@@ -11,7 +11,7 @@ Hosting everything inside one shell means:
 - summoning a panel is an IPC call into a process that is already running,
   not a fresh `quickshell -p ...` cold start
 - third-party plugins can be loaded from disk without changing any source
-  code in Omarchy itself
+  code in codeswotOS itself
 
 The runtime layout:
 
@@ -102,25 +102,25 @@ The full schema lives in `services/PluginRegistry.qml`.
 ## Installing a third-party plugin
 
 A plugin is a **git repo** with a `manifest.json` at its root. Adding one
-clones it straight into `~/.config/omarchy/plugins/<id>/` (named by the
+clones it straight into `~/.config/codeswot/plugins/<id>/` (named by the
 manifest id); updating is a fast-forward pull of that checkout.
 
 ```bash
-omarchy plugin add https://github.com/acme/omarchy-weather.git
-omarchy plugin update acme.weather       # fetches, shows a diff, fast-forwards
-omarchy plugin update                    # updates every git-managed plugin
-omarchy plugin remove acme.weather
+codeswot plugin add https://github.com/acme/omarchy-weather.git
+codeswot plugin update acme.weather       # fetches, shows a diff, fast-forwards
+codeswot plugin update                    # updates every git-managed plugin
+codeswot plugin remove acme.weather
 ```
 
-> ⚠️ **Plugins run as unsandboxed code inside `omarchy-shell`.** Adding warns you before cloning, plugins land disabled so you can review the code before enabling, and updates show a diff of the changes before touching anything. The scoped QML interfaces remove direct authentication-service and generic replacement-bar service lookups, but visual plugins still share and can traverse the ordinary host scene. Only add repos whose code you are willing to run.
+> ⚠️ **Plugins run as unsandboxed code inside `codeswot-shell`.** Adding warns you before cloning, plugins land disabled so you can review the code before enabling, and updates show a diff of the changes before touching anything. The scoped QML interfaces remove direct authentication-service and generic replacement-bar service lookups, but visual plugins still share and can traverse the ordinary host scene. Only add repos whose code you are willing to run.
 
 Add, update, and remove commands confirm in a terminal even when given
 arguments; without a terminal they refuse rather than guess. Pass `--yes` to
 skip every prompt — this is the path for scripts and AI agents:
 
 ```bash
-omarchy plugin add https://github.com/acme/omarchy-weather.git --enable --yes
-omarchy plugin update --yes
+codeswot plugin add https://github.com/acme/omarchy-weather.git --enable --yes
+codeswot plugin update --yes
 ```
 
 The installer never runs plugin code, install hooks, or sudo — it only clones
@@ -132,17 +132,17 @@ an installed plugin is a plain git checkout, anything beyond add/update
 
 You can still drop a plugin in without git:
 
-1. Put it in `~/.config/omarchy/plugins/<plugin-id>/` with a `manifest.json`
+1. Put it in `~/.config/codeswot/plugins/<plugin-id>/` with a `manifest.json`
    plus the QML referenced from its `entryPoints`.
-2. `omarchy-shell shell rescanPlugins`.
-3. `omarchy plugin enable <id>`. Bar widgets start in
+2. `codeswot-shell shell rescanPlugins`.
+3. `codeswot plugin enable <id>`. Bar widgets start in
    `barWidget.defaultSection`, or in the center when it is omitted, and can be
-   moved with `omarchy bar move`; a full bar replaces the one in use.
+   moved with `codeswot bar move`; a full bar replaces the one in use.
 
-The lower-level IPC equivalents remain available via `omarchy-shell shell rescanPlugins`,
-`omarchy-shell shell enablePlugin <id> '{}'`, and `omarchy-shell shell listPlugins`.
-The `omarchy plugin` commands wrap those calls. `omarchy bar move` and
-`omarchy bar set` edit the persisted widget layout in `shell.json`.
+The lower-level IPC equivalents remain available via `codeswot-shell shell rescanPlugins`,
+`codeswot-shell shell enablePlugin <id> '{}'`, and `codeswot-shell shell listPlugins`.
+The `codeswot plugin` commands wrap those calls. `codeswot bar move` and
+`codeswot bar set` edit the persisted widget layout in `shell.json`.
 
 To hack on a built-in plugin safely, clone it into user config instead of
 editing the built-in source. The complete plugin directory is copied, including
@@ -152,7 +152,7 @@ as its display name. The username prefix keeps shared clones from colliding
 with each other or with other plugin authors.
 
 ```bash
-omarchy plugin clone omarchy.clock
+codeswot plugin clone omarchy.clock
 ```
 
 Cloning switches from the built-in to the new personal plugin, preserving an
@@ -161,8 +161,8 @@ the interactive picker, then opens the new `<username>.*` directory in `$EDITOR`
 Existing shortcuts and shell IPC calls made to the built-in id are routed to
 the enabled clone, so cloning does not require changing its callers. Removing
 an active clone switches back to its built-in source.
-Saving a file anywhere under `~/.config/omarchy/plugins/` reloads plugin code
-automatically; `omarchy-shell shell rescanPlugins` remains available to force a reload.
+Saving a file anywhere under `~/.config/codeswot/plugins/` reloads plugin code
+automatically; `codeswot-shell shell rescanPlugins` remains available to force a reload.
 
 First-party plugins under `shell/plugins/` are discovered the same way and load
 by default. Disabling a non-widget records it in `disabledPlugins[]`; disabling
@@ -173,7 +173,7 @@ to add again. A full bar has no off state and is replaced by enabling another.
 
 The shell exposes a single `shell` IPC target plus whatever extra targets
 individual plugins register (e.g. the bar's `bar` target for refresh
-hooks, the image picker's `image-selector` target). `omarchy-menu` uses the
+hooks, the image picker's `image-selector` target). `codeswot-menu` uses the
 shell target to summon the first-party `omarchy.menu` plugin instead of
 running a separate Quickshell instance.
 
@@ -185,28 +185,28 @@ running a separate Quickshell instance.
 | `toggle <id> <payloadJson>`              | —       | summon if closed, hide if open                        |
 | `call <id> <method> <arg>`               | string  | call a method on an already-loaded plugin             |
 | `rescanPlugins`                          | —       | re-walk plugin dirs and hot-reload plugin code        |
-| `reloadConfig`                           | `ok`    | reload `~/.config/omarchy/shell.json`                 |
+| `reloadConfig`                           | `ok`    | reload `~/.config/codeswot/shell.json`                 |
 | `setPluginEnabled <id> <enabled>`        | `ok` / `unknown` | flip the persisted enabled bit (see note)    |
 | `listPlugins`                            | JSON    | every discovered plugin, sorted by name               |
 
 Direct invocation:
 
 ```
-quickshell ipc -p $OMARCHY_PATH/shell call shell ping
+quickshell ipc -p $CODESWOT_PATH/shell call shell ping
 ```
 
 Hyprland autostart launches the shell directly with `quickshell -p
-$OMARCHY_PATH/shell`. Use `omarchy-restart-shell` to stop every running
+$CODESWOT_PATH/shell`. Use `codeswot-restart-shell` to stop every running
 instance of that config and launch one fresh shell process.
 
-A convenience wrapper, [`omarchy-shell`](../bin/omarchy-shell), forwards IPC
+A convenience wrapper, [`codeswot-shell`](../bin/codeswot-shell), forwards IPC
 calls to the running shell. It does not start the shell.
 
 ```
-omarchy-shell shell ping
-omarchy-shell shell toggle omarchy.menu '{"menu":"root"}'
-omarchy-shell shell listPlugins
-omarchy-shell shell rescanPlugins
+codeswot-shell shell ping
+codeswot-shell shell toggle omarchy.menu '{"menu":"root"}'
+codeswot-shell shell listPlugins
+codeswot-shell shell rescanPlugins
 ```
 
 **Note on `setPluginEnabled`:** the `enabled` argument is a string. Only the
@@ -221,10 +221,10 @@ customization from the shipped defaults lives in it.
 
 | Path                              | Owner          | Purpose                                                |
 |-----------------------------------|----------------|--------------------------------------------------------|
-| `~/.config/omarchy/shell.json`    | the shell      | full layout + per-entry settings + enabled plugin list |
-| `~/.config/omarchy/plugins/<id>/` | user           | drop-in third-party plugin source files                |
+| `~/.config/codeswot/shell.json`    | the shell      | full layout + per-entry settings + enabled plugin list |
+| `~/.config/codeswot/plugins/<id>/` | user           | drop-in third-party plugin source files                |
 
-The `config/omarchy/shell.json` default config describes the
+The `config/codeswot/shell.json` default config describes the
 fresh-install state. When the user has no `shell.json`, the shell uses
 the defaults verbatim. Once the user customizes anything, `shell.json`
 becomes the authoritative file — we do **not** deep-merge defaults back in.
@@ -288,14 +288,14 @@ becomes the authoritative file — we do **not** deep-merge defaults back in.
 
 Built up in phases on this branch:
 
-- Phase 1 — `omarchy-shell phase 1: host the existing bar in a single shell`
-- Phase 2 — `omarchy-shell phase 2: plugin registry and bar widget registry`
-- Phase 3 — `omarchy-shell phase 3: fold bar-settings into the shell as a panel plugin`
-- Phase 4 — `omarchy-shell phase 4: absorb background-switcher as a plugin`
-- Phase 5 — `omarchy-shell phase 5: docs, cleanup, and migration crumbs`
-- Phase 6 — `omarchy-shell phase 6: reviewer cleanup (path traversal, collision, races)`
-- Phase 7 — `omarchy-shell phase 7: replace socket with IpcHandler, rename to image-picker`
-- Phase 8a — `omarchy-shell phase 8a: unified shell.json with inline plugin settings`
+- Phase 1 — `codeswot-shell phase 1: host the existing bar in a single shell`
+- Phase 2 — `codeswot-shell phase 2: plugin registry and bar widget registry`
+- Phase 3 — `codeswot-shell phase 3: fold bar-settings into the shell as a panel plugin`
+- Phase 4 — `codeswot-shell phase 4: absorb background-switcher as a plugin`
+- Phase 5 — `codeswot-shell phase 5: docs, cleanup, and migration crumbs`
+- Phase 6 — `codeswot-shell phase 6: reviewer cleanup (path traversal, collision, races)`
+- Phase 7 — `codeswot-shell phase 7: replace socket with IpcHandler, rename to image-picker`
+- Phase 8a — `codeswot-shell phase 8a: unified shell.json with inline plugin settings`
 
 Shared services and Pipewire/UPower/Hyprland consolidation are explicitly
 out of scope here and deferred to a follow-up after a review pass.

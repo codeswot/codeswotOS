@@ -1,5 +1,5 @@
-name: omarchy
-description: Omarchy system theme
+name: codeswot
+description: codeswotOS system theme
 colors:
   background: "{{ background }}"
   ui_text: "{{ foreground }}"
