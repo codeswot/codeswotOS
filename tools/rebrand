@@ -1,0 +1,169 @@
+#!/usr/bin/env perl
+# Rebrand an Omarchy tree (or a patch against one) to codeswotOS.
+#
+#   tools/rebrand tree <dir>     rename files and rewrite contents in place
+#   tools/rebrand stream         filter stdin to stdout (for upstream patches)
+#   tools/rebrand check <dir>    list leftover omarchy references for review
+#
+# Rules are deliberately conservative. Anything third-party code depends on
+# stays as-is: the shell plugin API (omarchy.<plugin> ids, manifest.omarchy,
+# omarchyPath, Omarchy* QML types), app ids (org./com.omarchy.*), snake_case
+# Lua/bash knobs, the omarchy icon font, the [omarchy] package repo and the
+# names of packages still built by Omarchy (tools/rebrand.keep-packages).
+# Everything that identifies the system itself is renamed.
+
+use strict;
+use warnings;
+use File::Basename qw(dirname);
+use File::Find;
+use FindBin;
+
+my $mode = shift // die "usage: rebrand tree|stream|check [dir]\n";
+
+my %keep_pkg;
+{
+  open my $fh, '<', "$FindBin::Bin/rebrand.keep-packages" or die "keep-packages: $!";
+  while (<$fh>) { s/#.*//; s/\s+//g; $keep_pkg{$_} = 1 if length }
+}
+
+# Names this tree owns: every omarchy-* basename (commands, units, hooks,
+# desktop files) with and without its extension. These always get renamed,
+# even when a same-named package exists upstream.
+my %owned = map { $_ => 1 } qw(omarchy omarchy-settings omarchy-settings-dev);
+sub collect_owned {
+  my ($dir) = @_;
+  find(sub {
+    return if $File::Find::name =~ m{/\.git(/|$)};
+    for my $name ($_, s/\.[^.]+$//r) {
+      $owned{$1} = 1 while $name =~ /(omarchy-[a-z0-9-]*[a-z0-9])/g;
+    }
+  }, $dir);
+}
+
+my %unknown;
+
+sub rename_dash {
+  my ($tok) = @_;               # full omarchy-foo-bar token
+  return $tok if !$owned{$tok} && $keep_pkg{$tok};
+  $unknown{$tok}++ unless $owned{$tok};
+  return 'codeswot' . substr($tok, 7);
+}
+
+# File extensions: omarchy.<ext> is a file name, not a plugin id.
+my $ext = qr/(?:conf|sh|toml|lua|jsonc?|desktop|plymouth|script|hook|service|png|jpe?g|webp|svg|md|txt|ini|log|lock)\b/;
+
+sub rebrand {
+  local $_ = shift;
+  s{
+    ( https?://[^\s"'`)<>\]]+               # URLs: credit/upstream links
+    | (?:[\w-]+\.)*omarchy\.org\b            # omarchy.org hosts
+    | \[omarchy\]                            # pacman repo section
+    | (?:basecamp|omacom(?:-io)?)/omarchy[\w.-]*   # upstream repo slugs
+    | \b(?:org|com|manifest|candidateManifest|spoofedAuth|value)(?:\\?\.)omarchy\b(?![-/])
+                                             # app ids, manifest keys
+    | \bomarchy\.(?=[a-z][\w-]*(?:["'\s,;)\]\}:]|$))(?!$ext)[a-z][\w-]*
+    | \bomarchy\\\.(?!$ext)(?:[a-z][\w-]*)?   # same, regex-escaped
+                                             # shell plugin / menu ids
+    | \bomarchy\.(?=["'`])                   # first-party plugin id prefix
+    | iconFont["']?\s*[:=]\s*["']omarchy["'] # icon font family
+    | fonts/omarchy/omarchy\.ttf | fonts/omarchy\b | \bomarchy\.ttf
+    | family\s*[:=]\s*["']omarchy["']
+    | ["']omarchy["'](?=\s*\)?\s*;?\s*//\s*icon)  # font family literals
+    | \bomarchy[A-Z]\w*                      # QML API (omarchyPath, ...)
+    | \bOmarchy[A-Z]\w*                      # QML types
+    | \w*_omarchy\w* | \bomarchy_\w+         # snake_case knobs/functions
+    | \blinux-omarchy[\w-]*                  # Omarchy kernels
+    )
+    | \b(omarchy-[a-z0-9-]*[a-z0-9])(?![\w])  # dashed names
+    | \bomarchy-(?=[^a-z0-9])                 # prefix building, e.g. omarchy-VAR
+    | \bOMARCHY_                              # env vars
+    | \bOMARCHY\b
+    | \bOmarchy(?:OS)?\b
+    | \bomarchy\b
+  }{
+    defined $1 ? $1
+    : defined $2 ? rename_dash($2)
+    : $& eq 'omarchy-' ? 'codeswot-'
+    : $& eq 'OMARCHY_' ? 'CODESWOT_'
+    : $& eq 'OMARCHY' ? 'CODESWOT'
+    : $& =~ /^Omarchy/ ? 'codeswotOS'
+    : 'codeswot'
+  }gex;
+  return $_;
+}
+
+sub is_text {
+  my ($path) = @_;
+  return 0 if -l $path || !-f $path;
+  return -T $path;
+}
+
+my %skip_content = map { $_ => 1 } qw(LICENSE UPSTREAM);
+
+if ($mode eq 'stream') {
+  my $root = shift // '.';
+  collect_owned($root) if -d $root;
+  local $/;
+  print rebrand(<STDIN>);
+  exit 0;
+}
+
+my $dir = shift // die "usage: rebrand $mode <dir>\n";
+collect_owned($dir);
+
+if ($mode eq 'check') {
+  find(sub {
+    return if $File::Find::name =~ m{/\.git(/|$)|/tools/rebrand};
+    return unless is_text($_);
+    open my $fh, '<', $_ or return;
+    while (my $line = <$fh>) {
+      print "$File::Find::name:$.: $line" if $line =~ /omarchy/i;
+    }
+  }, $dir);
+  exit 0;
+}
+
+die "unknown mode $mode\n" unless $mode eq 'tree';
+
+# Contents first, then paths deepest-first so parents rename last.
+my @paths;
+find({ no_chdir => 1, wanted => sub {
+  if (m{/\.git$} || m{/tools$}) { $File::Find::prune = 1; return }
+  push @paths, $_;
+}}, $dir);
+
+for my $path (@paths) {
+  next if $skip_content{ (split m{/}, $path)[-1] };
+  if (-l $path) {
+    my $target = readlink $path;
+    my $new = rebrand($target);
+    if ($new ne $target) { unlink $path; symlink $new, $path or die "$path: $!" }
+    next;
+  }
+  next unless is_text($path);
+  open my $in, '<:raw', $path or die "$path: $!";
+  my $old = do { local $/; <$in> };
+  close $in;
+  my $new = rebrand($old);
+  next if $new eq $old;
+  my $mode_bits = (stat $path)[2] & 07777;
+  open my $out, '>:raw', $path or die "$path: $!";
+  print $out $new;
+  close $out;
+  chmod $mode_bits, $path;
+}
+
+for my $path (sort { length $b <=> length $a } @paths) {
+  my ($base) = $path =~ m{([^/]+)$};
+  next if $base eq 'omarchy.ttf' || $path =~ m{/fonts/omarchy$};
+  my $new_base = rebrand($base);
+  next if $new_base eq $base;
+  my $target = dirname($path) . "/$new_base";
+  die "rename collision: $target\n" if -e $target;
+  rename $path, $target or die "$path -> $target: $!";
+}
+
+if (%unknown) {
+  print STDERR "renamed names not found as files (review):\n";
+  print STDERR "  $_ ($unknown{$_})\n" for sort keys %unknown;
+}
