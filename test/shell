@@ -7,8 +7,16 @@ TEST_DIR="$ROOT/test/shell.d"
 
 shopt -s nullglob
 tests=()
+# Legacy Omarchy migration tests that cannot pass after the rebrand; see the
+# file for why.
+skipped=()
+mapfile -t skipped < <(sed -e "s/#.*//" -e "/^[[:space:]]*$/d" "$ROOT/test/legacy-upstream.skip" 2>/dev/null)
+
 for test in "$TEST_DIR"/*-test.sh; do
   [[ $(basename "$test") == "base-test.sh" ]] && continue
+  for skip in "${skipped[@]}"; do
+    [[ $(basename "$test") == "$skip" ]] && continue 2
+  done
   tests+=("$test")
 done
 shopt -u nullglob

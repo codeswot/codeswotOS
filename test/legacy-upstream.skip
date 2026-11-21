@@ -1,0 +1,9 @@
+# Tests for Omarchy migrations that recognize stock config files by their
+# Omarchy-branded content (exact text or sha256). After the rebrand that
+# content can never match, and the migrations themselves only matter on
+# systems older than v4.0.6, the release codeswotOS forked from: adoption
+# runs every pending Omarchy migration first, and fresh installs are seeded
+# as already migrated. test/shell skips the files listed here.
+hyprland-default-config-test.sh
+kitty-config-test.sh
+opr-priority-migration-test.sh
