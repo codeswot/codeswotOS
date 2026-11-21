@@ -29,7 +29,7 @@ my %keep_pkg;
 # Names this tree owns: every omarchy-* basename (commands, units, hooks,
 # desktop files) with and without its extension. These always get renamed,
 # even when a same-named package exists upstream.
-my %owned = map { $_ => 1 } qw(omarchy omarchy-settings omarchy-settings-dev);
+my %owned = map { $_ => 1 } qw(omarchy omarchy-dev omarchy-settings omarchy-settings-dev);
 sub collect_owned {
   my ($dir) = @_;
   find(sub {
@@ -51,6 +51,8 @@ sub rename_dash {
 
 # File extensions: omarchy.<ext> is a file name, not a plugin id.
 my $ext = qr/(?:conf|sh|toml|lua|jsonc?|desktop|plymouth|script|hook|service|png|jpe?g|webp|svg|md|txt|ini|ya?ml)\b/;
+# Start of a name: not glued to a letter or digit, but \t and \n escapes count.
+my $B = qr/(?:(?<![A-Za-z0-9])|(?<=\\[tnr]))/;
 
 sub rebrand {
   local $_ = shift;
@@ -61,31 +63,29 @@ sub rebrand {
     | (?:basecamp|omacom(?:-io)?)/omarchy[\w.-]*   # upstream repo slugs
     | \b(?:org|com|manifest|candidateManifest|spoofedAuth|value)(?:\\?\.)omarchy\b(?![-/])
                                              # app ids, manifest keys
-    | \bomarchy\.(?!$ext|current\b)[a-z][\w-]*
-    | \bomarchy\\\.(?!$ext)(?:[a-z][\w-]*)?   # same, regex-escaped
+    | ${B}omarchy\.(?!$ext|current\b)[a-z][\w-]*
+    | ${B}omarchy\\\.(?!$ext)(?:[a-z][\w-]*)?   # same, regex-escaped
                                              # shell plugin / menu ids
-    | \bomarchy\.(?=["'`])                   # first-party plugin id prefix
+    | ${B}omarchy\.(?=["'`])                   # first-party plugin id prefix
     | iconFont["']?\s*[:=]\s*["']omarchy["'] # icon font family
-    | fonts/omarchy/omarchy\.ttf | fonts/omarchy\b | \bomarchy\.ttf
+    | fonts/omarchy/omarchy\.ttf | fonts/omarchy\b | ${B}omarchy\.ttf
     | family\s*[:=]\s*["']omarchy["']
     | ["']omarchy["'](?=\s*\)?\s*;?\s*//\s*icon)  # font family literals
-    | \bomarchy[A-Z]\w*                      # QML API (omarchyPath, ...)
-    | \bOmarchy[A-Z]\w*                      # QML types
-    | \w*_omarchy\w* | \bomarchy_\w+         # snake_case knobs/functions
+    | ${B}omarchy[A-Z]\w*                      # QML API (omarchyPath, ...)
+    | ${B}Omarchy[A-Z]\w*                      # QML types
+    | \w*_omarchy\w* | ${B}omarchy_\w+         # snake_case knobs/functions
     | \blinux-omarchy[\w-]*                  # Omarchy kernels
     )
-    | \b(omarchy-[a-z0-9-]*[a-z0-9])(?![\w])  # dashed names
-    | \bomarchy-(?=[^a-z0-9])                 # prefix building, e.g. omarchy-VAR
-    | \bOMARCHY_                              # env vars
-    | \bOMARCHY\b
-    | \bOmarchy(?:OS)?\b
-    | \bomarchy\b
+    | ${B}(omarchy-[a-z0-9-]*[a-z0-9])(?![\w])  # dashed names
+    | ${B}omarchy-(?=[^a-z0-9])                 # prefix building, e.g. omarchy-VAR
+    | OMARCHY                                 # env vars, constants
+    | ${B}Omarchy(?:OS)?\b
+    | ${B}omarchy\b
   }{
     defined $1 ? $1
     : defined $2 ? rename_dash($2)
     : $& eq 'omarchy-' ? 'codeswot-'
-    : $& eq 'OMARCHY_' ? 'CODESWOT_'
-    : $& eq 'OMARCHY' ? 'CODESWOT'
+    : $& eq q(OMARCHY) ? q(CODESWOT)
     : $& =~ /^Omarchy/ ? 'codeswotOS'
     : 'codeswot'
   }gex;
