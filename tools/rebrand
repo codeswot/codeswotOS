@@ -67,6 +67,7 @@ sub rebrand {
     | (?<=\w\\\.)omarchy\b(?![-/])                # same, regex-escaped
     | (?<=[\s(|,{\[\]}'"?!])\.omarchy\b(?![-/])  # jq / js .omarchy field access
     | ["']omarchy["'](?=\s*:)                 # "omarchy": manifest key
+    | ${B}omarchy(?=:\s)                            # omarchy: unquoted manifest key
     | ${B}omarchy\.\*                             # the omarchy.* id namespace
     | ${B}omarchy\.(?!$ext|current\b)[a-z][\w-]*
     | ${B}omarchy\\\.(?!$ext)(?:[a-z][\w-]*)?   # same, regex-escaped
