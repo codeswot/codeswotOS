@@ -69,7 +69,7 @@ sub rebrand {
     | ${B}omarchy\.(?!$ext|current\b)[a-z][\w-]*
     | ${B}omarchy\\\.(?!$ext)(?:[a-z][\w-]*)?   # same, regex-escaped
                                              # shell plugin / menu ids
-    | ${B}omarchy\.(?=["'`])                   # first-party plugin id prefix
+    | ${B}omarchy\.(?![a-z0-9])                  # first-party plugin id prefix
     | iconFont["']?\s*[:=]\s*["']omarchy["'] # icon font family
     | fonts/omarchy/omarchy\.ttf | fonts/omarchy\b | ${B}omarchy\.ttf
     | family\s*[:=]\s*["']omarchy["']
