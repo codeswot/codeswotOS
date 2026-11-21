@@ -29,7 +29,7 @@ THEMES_DIR="$HOME/.config/codeswot/themes"
 # user's home, and leaving its prefix on names the theme after the whole URL.
 REPO_PATH="$REPO_URL"
 [[ $REPO_PATH != *"://"* && $REPO_PATH == *:* && ${REPO_PATH%%:*} != */* ]] && REPO_PATH="${REPO_PATH#*:}"
-THEME_NAME=$(basename -- "$REPO_PATH" .git | sed -E 's/^codeswot-//; s/-theme$//' | tr '[:upper:]' '[:lower:]')
+THEME_NAME=$(basename -- "$REPO_PATH" .git | sed -E 's/^(codeswot|omarchy)-//; s/-theme$//' | tr '[:upper:]' '[:lower:]')
 THEME_PATH="$THEMES_DIR/$THEME_NAME"
 
 # The name comes from the URL, is joined into a path that is about to be
