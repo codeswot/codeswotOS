@@ -1,0 +1,155 @@
+#!/bin/bash
+# Build, sign and publish a codeswotOS release to the pacman repository that
+# lives on this repository's GitHub releases.
+#
+#   tools/release [--channel stable|edge] [--dry-run]
+#
+# Versions are today's date (YYYY.MM.DD, then .1, .2... for later releases the
+# same day). The release builds the current commit, records it in the
+# PKGBUILDs as a "Release" commit, signs every package and the database with
+# the key in default/pacman/signing-key, and uploads them to the <channel>-<arch>
+# GitHub release. Old packages stay in the repository so `pacman -U` can roll
+# back to them.
+#
+# pacman.conf:
+#   [codeswot]
+#   SigLevel = Required
+#   Server = https://github.com/codeswot/codeswotOS/releases/download/stable-$arch
+
+set -euo pipefail
+
+ROOT=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)
+cd "$ROOT"
+
+channel=stable
+dry_run=0
+while (( $# )); do
+  case $1 in
+  --channel) channel=${2:?--channel needs a value}; shift 2 ;;
+  --dry-run) dry_run=1; shift ;;
+  *) echo "usage: tools/release [--channel stable|edge] [--dry-run]" >&2; exit 1 ;;
+  esac
+done
+[[ $channel == stable || $channel == edge ]] || { echo "release: unknown channel $channel" >&2; exit 1; }
+
+die() { echo "release: $*" >&2; exit 1; }
+
+key=$(sed -n 's/^fingerprint=//p' default/pacman/signing-key)
+[[ $key =~ ^[0-9A-F]{40}$ ]] || die "default/pacman/signing-key has no fingerprint"
+gpg --list-secret-keys "$key" >/dev/null 2>&1 || die "signing key $key is not in this GPG keyring"
+(( dry_run )) || gh auth status >/dev/null 2>&1 || die "run: gh auth login"
+[[ -z $(git status --porcelain) ]] || die "working tree is not clean"
+
+arch=$(uname -m)
+tag="$channel-$arch"
+repo_dir="${XDG_CACHE_HOME:-$HOME/.cache}/codeswotOS/repo/$tag"
+# A dry run works on a throwaway copy so the local repository stays as published.
+if (( dry_run )); then
+  scratch_repo=$(mktemp -d)
+  cp -a "$repo_dir/." "$scratch_repo/" 2>/dev/null || true
+  repo_dir=$scratch_repo
+fi
+mkdir -p "$repo_dir"
+
+# Start from the published database, so this release adds to it.
+if (( ! dry_run )) && gh release view "$tag" >/dev/null 2>&1; then
+  gh release download "$tag" --dir "$repo_dir" --clobber \
+    --pattern 'codeswot.db.tar.gz' --pattern 'codeswot.files.tar.gz'
+fi
+
+published_versions() {
+  [[ -f $repo_dir/codeswot.db.tar.gz ]] || return 0
+  bsdtar -tf "$repo_dir/codeswot.db.tar.gz" | sed -n 's|^codeswot-\([0-9.]*\)-[0-9]*/$|\1|p'
+}
+
+today=$(date +%Y.%m.%d)
+version=$today
+n=0
+while published_versions | grep -qxF "$version"; do
+  version="$today.$(( ++n ))"
+done
+
+commit=$(git rev-parse HEAD)
+echo "==> codeswotOS $version from ${commit:0:12} to $tag"
+
+build=$(mktemp -d)
+trap 'rm -rf "$build"' EXIT
+git archive "$commit" | tar -x -C "$build" --one-top-level=src
+
+set_pkgbuild() {
+  sed -i -E \
+    -e "s/^pkgver=.*/pkgver=$version/" \
+    -e "s/^pkgrel=.*/pkgrel=1/" \
+    -e "s/^_commit=.*/_commit='$commit'/" \
+    "$1"
+}
+
+built=()
+make_package() {
+  local name=$1
+  cp -r "packaging/$name" "$build/$name"
+  (cd "$build/$name" && CODESWOT_SRC="$build/src" PKGDEST="$build/out" makepkg -fd --noconfirm --nosign >"$build/$name.log" 2>&1) ||
+    { tail -20 "$build/$name.log" >&2; die "$name failed to build"; }
+}
+
+# The keyring only needs a new release when the key files change.
+gpg --export "$key" >packaging/codeswot-keyring/codeswot.gpg
+echo "$key:4:" >packaging/codeswot-keyring/codeswot-trusted
+keyring_version=$(sed -n 's/^pkgver=//p' packaging/codeswot-keyring/PKGBUILD)
+if ! bsdtar -tf "$repo_dir/codeswot.db.tar.gz" 2>/dev/null | grep -qx "codeswot-keyring-$keyring_version-[0-9]*/" ||
+  [[ -n $(git status --porcelain packaging/codeswot-keyring) ]]; then
+  [[ -z $(git status --porcelain packaging/codeswot-keyring) ]] || sed -i "s/^pkgver=.*/pkgver=$version/" packaging/codeswot-keyring/PKGBUILD
+  make_package codeswot-keyring
+fi
+
+set_pkgbuild packaging/codeswot/PKGBUILD
+set_pkgbuild packaging/codeswot-settings/PKGBUILD
+make_package codeswot-settings
+make_package codeswot
+
+mkdir -p "$build/upload"
+for package in "$build"/out/*.pkg.tar.zst; do
+  gpg --batch --yes --local-user "$key" --detach-sign --no-armor "$package"
+  cp "$package" "$package.sig" "$repo_dir/"
+  cp "$package" "$package.sig" "$build/upload/"
+  built+=("$repo_dir/$(basename "$package")")
+done
+
+repo-add --sign --key "$key" "$repo_dir/codeswot.db.tar.gz" "${built[@]}"
+
+gpg --armor --export "$key" >"$build/upload/codeswot-signing-key.asc"
+
+# GitHub releases cannot hold symlinks: upload the databases under both names.
+for db in db files; do
+  cp -L "$repo_dir/codeswot.$db.tar.gz" "$repo_dir/codeswot.$db.tar.gz.sig" "$build/upload/"
+  cp -L "$repo_dir/codeswot.$db.tar.gz" "$build/upload/codeswot.$db"
+  cp -L "$repo_dir/codeswot.$db.tar.gz.sig" "$build/upload/codeswot.$db.sig"
+done
+
+if (( dry_run )); then
+  git checkout -q -- packaging
+  git clean -fdq packaging
+  rm -rf "$repo_dir"
+  echo "==> dry run: built and signed, nothing published"
+  ls -1 "$build/upload"
+  exit 0
+fi
+
+git add packaging
+git commit -q -m "Release codeswotOS $version"
+git tag "release/$version"
+git push -q origin HEAD "release/$version"
+
+if ! gh release view "$tag" >/dev/null 2>&1; then
+  gh release create "$tag" --title "codeswotOS $channel ($arch) package repository" \
+    --notes "pacman repository for the $channel channel. Add to /etc/pacman.conf:
+
+\`\`\`
+[codeswot]
+SigLevel = Required
+Server = https://github.com/codeswot/codeswotOS/releases/download/$channel-\$arch
+\`\`\`"
+fi
+gh release upload "$tag" --clobber "$build"/upload/*
+
+echo "==> published codeswotOS $version to $tag"

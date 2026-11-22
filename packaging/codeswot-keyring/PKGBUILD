@@ -1,0 +1,25 @@
+# Maintainer: codeswot <elmubarak333@gmail.com>
+
+# The public half of the codeswotOS package signing key. tools/release
+# exports codeswot.gpg and codeswot-trusted from the signing key; add a key's
+# fingerprint to codeswot-revoked to retire it.
+pkgname=codeswot-keyring
+pkgver=2026.11.22
+pkgrel=1
+pkgdesc='codeswotOS package signing keyring'
+arch=(any)
+url='https://github.com/codeswot/codeswotOS'
+license=('MIT')
+install=$pkgname.install
+source=('codeswot.gpg'
+        'codeswot-revoked'
+        'codeswot-trusted'
+        "$install")
+sha512sums=('SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP')
+
+package() {
+  install -Dm644 -t "$pkgdir/usr/share/pacman/keyrings/" codeswot{.gpg,-trusted,-revoked}
+}
