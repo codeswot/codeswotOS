@@ -24,7 +24,7 @@
   "install": {"icon":"󰉉","label":"Install"},
   "remove": {"icon":"󰭌","label":"Remove","aliases":["uninstall"]},
   "update": {"icon":"","label":"Update","aliases":["restart","refresh"]},
-  "about": {"icon":"","label":"About","action":"codeswot-launch-about"},
+  "about": {"icon":"","label":"About {C}odeswot","action":"codeswot-launch-about"},
   "system": {"icon":"","label":"System","aliases":["power-menu"]},
 
   // System
@@ -338,7 +338,7 @@
   "remove.ai.perplexity": {"icon":"","iconFont":"omarchy","label":"Perplexity","when":"codeswot-pkg-present perplexity","action":"codeswot-launch-floating-terminal-with-presentation codeswot-remove-ai-perplexity"},
 
   // Update
-  "update.omarchy": {"icon":"","iconFont":"omarchy","label":"codeswotOS","action":"codeswot-launch-floating-terminal-with-presentation codeswot-update"},
+  "update.omarchy": {"icon":"","iconFont":"omarchy","label":"{C}odeswot","action":"codeswot-launch-floating-terminal-with-presentation codeswot-update"},
   "update.channel": {"icon":"󰔫","label":"Channel"},
   "update.config": {"icon":"","label":"Config","title":"Reset to default"},
   "update.themes": {"icon":"󰸌","label":"Extra Themes","when":"codeswot-theme-extras","action":"codeswot-launch-floating-terminal-with-presentation codeswot-theme-update"},
