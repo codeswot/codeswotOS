@@ -4,10 +4,10 @@ mkdir -p ~/.config/codeswot/themes
 if [[ ! -s $HOME/.local/state/codeswot/current/theme.name ]]; then
   # iso-chroot and provision-owner both run without a live session to notify.
   if [[ ${CODESWOT_SETUP_CONTEXT:-runtime} != "runtime" ]]; then
-    CODESWOT_THEME_HEADLESS=1 codeswot-theme-set "Tokyo Night"
+    CODESWOT_THEME_HEADLESS=1 codeswot-theme-set "Codeswot"
     rm -f ~/.config/chromium/SingletonLock # otherwise archiso owns the Chromium singleton
   else
-    codeswot-theme-set "Tokyo Night"
+    codeswot-theme-set "Codeswot"
   fi
 fi
 codeswot-theme-set-pi --activate
