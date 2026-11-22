@@ -15,6 +15,19 @@ if codeswot-pkg-missing omarchy-keyring || ! sudo pacman-key --list-keys 40DFB63
   sudo pacman-key --list-keys 40DFB630FF42BCFFB047046CF0134EE680CAC571
 fi
 
+# codeswotOS signs its own packages. Its keyring package normally arrives with
+# codeswot itself; bootstrap trust from the published key when it hasn't.
+codeswot_key=$(sed -n 's/^fingerprint=//p' "$CODESWOT_PATH/default/pacman/signing-key")
+if [[ -n $codeswot_key ]] && { codeswot-pkg-missing codeswot-keyring || ! sudo pacman-key --list-keys "$codeswot_key" &>/dev/null; }; then
+  # Only the exact fingerprint gets locally signed, so a substituted key file
+  # is added but never trusted.
+  curl -fsSL "https://github.com/codeswot/codeswotOS/releases/download/stable-$(uname -m)/codeswot-signing-key.asc" |
+    sudo pacman-key --add -
+  sudo pacman-key --lsign-key "$codeswot_key"
+  sudo pacman -Sy
+  codeswot-pkg-add codeswot-keyring
+fi
+
 # Ensure we have the latest archlinux-keyring, maintainer keys might have changed.
 # --needed installs only a newer keyring: new or revoked keys reach the repos
 # as a new package version, and an installed version was populated when it

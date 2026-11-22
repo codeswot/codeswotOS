@@ -1,0 +1,3 @@
+# Fingerprint of the key that signs codeswotOS packages and its repository
+# database. tools/release signs with it; codeswot-update-keyring trusts it.
+fingerprint=
