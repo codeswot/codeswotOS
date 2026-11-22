@@ -165,6 +165,7 @@ for my $path (@paths) {
 for my $path (sort { length $b <=> length $a } @paths) {
   my ($base) = $path =~ m{([^/]+)$};
   next if $base eq 'omarchy.ttf' || $path =~ m{/fonts/omarchy$};
+  next if $path =~ m{/backgrounds/[^/]+$};   # wallpapers keep their artwork names
   my $new_base = rebrand($base);
   next if $new_base eq $base;
   my $target = dirname($path) . "/$new_base";
