@@ -120,6 +120,30 @@ Item {
       onPositionChanged: root.wakeRequested()
     }
 
+    Row {
+      id: brandHeader
+      anchors.bottom: inputField.top
+      anchors.bottomMargin: 32
+      anchors.horizontalCenter: parent.horizontalCenter
+      spacing: 2
+
+      Text {
+        text: "{C}"
+        color: Commons.Color.accent
+        font.family: Style.font.family
+        font.pixelSize: Math.round(Style.font.heading * 1.8)
+        font.bold: true
+      }
+
+      Text {
+        text: "odeswot"
+        color: Commons.Color.foreground
+        font.family: Style.font.family
+        font.pixelSize: Math.round(Style.font.heading * 1.8)
+        font.bold: true
+      }
+    }
+
     BorderSurface {
       id: inputField
       width: root.fieldWidth

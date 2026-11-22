@@ -1,4 +1,6 @@
 import QtQuick
+import qs.Commons
+import qs.Commons as Commons
 import qs.Ui
 
 BarWidget {
@@ -12,13 +14,14 @@ BarWidget {
     id: button
     anchors.fill: parent
     bar: root.bar
-    text: "\ue900"
-    fontFamily: "omarchy"
+    text: "{C}"
+    foreground: Commons.Color.accent
     horizontalMargin: 7.5
     onPressed: function(button) {
       if (!root.bar) return
-      if (button === Qt.RightButton) root.bar.run("xdg-terminal-exec")
-      else root.bar.run("codeswot-shell shell toggle omarchy.menu '{\"menu\":\"root\"}'")
+      if (button === Qt.RightButton) root.bar.run("codeswot-shell shell toggle omarchy.menu '{\"menu\":\"root\"}'")
+      else root.bar.run("xdg-terminal-exec")
     }
   }
 }
+
