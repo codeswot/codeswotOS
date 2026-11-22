@@ -137,7 +137,7 @@ fi
 
 git add packaging
 git commit -q -m "Release codeswotOS $version"
-git tag "release/$version"
+git tag -a -m "codeswotOS $version" "release/$version"
 git push -q origin HEAD "release/$version"
 
 if ! gh release view "$tag" >/dev/null 2>&1; then
