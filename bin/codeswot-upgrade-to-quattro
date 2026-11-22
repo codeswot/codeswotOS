@@ -1999,7 +1999,7 @@ done
 
 mkdir -p "$HOME/.config/codeswot/branding"
 [[ -f $root/icon.txt ]] && cp "$root/icon.txt" "$HOME/.config/codeswot/branding/about.txt"
-[[ -f $root/logo.txt ]] && cp "$root/logo.txt" "$HOME/.config/codeswot/branding/screensaver.txt"
+[[ -f $root/screensaver.txt ]] && cp "$root/screensaver.txt" "$HOME/.config/codeswot/branding/screensaver.txt"
 
 mkdir -p "$HOME/Downloads" "$HOME/Pictures" "$HOME/Videos" "$HOME/Projects" "$HOME/.config/gtk-3.0"
 if command -v xdg-user-dirs-update >/dev/null 2>&1; then

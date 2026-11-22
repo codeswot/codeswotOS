@@ -19,7 +19,7 @@ text)
   codeswot-launch-editor ~/.config/codeswot/branding/screensaver.txt >/dev/null 2>&1 && codeswot-launch-screensaver force >/dev/null 2>&1
   ;;
 reset)
-  cp "$CODESWOT_PATH/logo.txt" ~/.config/codeswot/branding/screensaver.txt && codeswot-launch-screensaver force >/dev/null 2>&1
+  cp "$CODESWOT_PATH/screensaver.txt" ~/.config/codeswot/branding/screensaver.txt && codeswot-launch-screensaver force >/dev/null 2>&1
   ;;
 *)
   echo "Usage: codeswot-branding-screensaver <image|text|reset>" >&2
