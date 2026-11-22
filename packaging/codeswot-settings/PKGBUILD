@@ -3,7 +3,7 @@
 # Versioning: see packaging/codeswot/PKGBUILD. Always the same pkgver and
 # _commit as codeswot.
 pkgname='codeswot-settings'
-_commit='HEAD'
+_commit='15aec685164e67d544d1c9c323a54dd2af977c9e'
 pkgver=2026.11.22
 pkgrel=1
 pkgdesc='codeswotOS user defaults, /etc/skel content, fonts, plymouth theme, and support helpers'
