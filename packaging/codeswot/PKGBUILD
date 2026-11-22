@@ -1,0 +1,167 @@
+# Maintainer: codeswot <elmubarak333@gmail.com>
+# Packaging adapted from Omarchy's (https://github.com/omacom-io/omarchy-pkgs).
+#
+# Versions are calendar dates (YYYY.MM.DD), with .N appended for a second
+# release on the same day. pkgrel resets to 1 whenever pkgver changes; bump it
+# alone only to repackage the same source. codeswot and codeswot-settings
+# always carry the same pkgver and _commit; tools/release keeps them in step.
+pkgname='codeswot'
+_commit='HEAD'
+pkgver=2026.11.22
+pkgrel=1
+pkgdesc='codeswotOS: a personal Arch Linux desktop on Hyprland, forked from Omarchy'
+# The payload is architecture-independent, but the dependency set is not: the
+# boot stack differs per architecture (see depends_x86_64 / depends_aarch64),
+# and makepkg only honours arch-suffixed arrays on arch-specific packages.
+arch=('x86_64' 'aarch64')
+url='https://github.com/codeswot/codeswotOS'
+license=('MIT')
+# codeswot takes over from Omarchy's own packages. omarchy-themes-intros only
+# fills /usr/share/omarchy, which codeswot turns into a compatibility link.
+provides=('omarchy')
+conflicts=('codeswot-dev' 'omarchy' 'omarchy-dev' 'omarchy-themes-intros')
+# Hard depends: only packages whose removal would brick the desktop. The ISO
+# pacstraps the full default install set from install/codeswot-base.packages.
+depends=(
+  'codeswot-keyring'
+  # Third-party packages (quickshell, ghostty, the kernel...) still come from
+  # Omarchy's repository, signed with Omarchy's key.
+  'omarchy-keyring'
+  # Exact-version pin, so the pair always upgrades together.
+  "codeswot-settings=${pkgver}"
+
+  # Wayland / Hyprland core
+  'hyprland'
+  'quickshell'
+  'uwsm'
+  'sddm'
+  'xdg-desktop-portal-hyprland'
+
+  # Audio / auth / portal essentials
+  'wireplumber'
+  'pipewire'
+  'gnome-keyring'
+
+  # Required by codeswot-* scripts and codeswot-shell
+  'gum'
+  'jq'
+  'git'
+  'perl' # /usr/bin/codeswot-shell invokes perl directly
+
+  # Update availability checks (checkupdates from pacman-contrib uses fakeroot)
+  'fakeroot'
+  'pacman-contrib'
+
+  # System font (UI assumes it)
+  'ttf-jetbrains-mono-nerd-basic'
+)
+
+# Bootloader stack. Lives here rather than on codeswot-settings because
+# codeswot-settings is also installed into the live ISO env (for plymouth
+# / /etc/skel seeding), where the limine-mkinitcpio-hook would fail with
+# 'Cannot detect an ESP path' inside the chroot. The codeswot-settings
+# config drop-ins under /etc/mkinitcpio.conf.d/, /etc/limine-entry-tool.d/,
+# and /etc/snapper/config-templates/ only do anything when these are
+# installed alongside.
+depends_x86_64=(
+  'limine'
+  'limine-mkinitcpio-hook'
+  'limine-snapper-sync'
+  'snapper'
+)
+
+# Apple Silicon boots through m1n1 + GRUB from the Asahi packages and keeps
+# Arch Linux ARM's kernel and boot layout, so the Limine/Snapper stack does not
+# apply. Only Apple Silicon's Broadcom Wi-Fi needs iwd, and omarchy-mac depends
+# on it. Elsewhere the package only renames the Wi-Fi interface to wlan0
+# (80-iwd.link), and a saved connection tied to the old name stops connecting.
+depends_aarch64=(
+  'networkmanager'
+)
+
+makedepends=(
+  'git'
+)
+
+# Source: the pinned commit of this repository; set CODESWOT_SRC=/path/to/checkout
+# to build from a local source tree instead (tools/release does).
+if [[ -n "${CODESWOT_SRC:-}" ]]; then
+  source=()
+  sha256sums=()
+else
+  source=("codeswot::git+https://github.com/codeswot/codeswotOS.git#commit=${_commit}")
+  sha256sums=('SKIP')
+fi
+
+prepare() {
+  if [[ -n "${CODESWOT_SRC:-}" ]]; then
+    rm -rf "$srcdir/codeswot"
+    mkdir -p "$srcdir/codeswot"
+    cp -a "${CODESWOT_SRC}/." "$srcdir/codeswot/"
+  fi
+}
+
+package() {
+  cd "$srcdir/codeswot"
+
+  # Runtime binaries — ship everything in bin/ except the debug helpers
+  # that ship from codeswot-settings (needed before codeswot is installed,
+  # e.g. on the ISO live env).
+  install -d "$pkgdir/usr/bin" "$pkgdir/usr/share/codeswot/bin"
+  for bin in bin/*; do
+    [[ -f $bin ]] || continue
+    local base
+    base=$(basename "$bin")
+    case "$base" in
+      codeswot-debug|codeswot-debug-idle|codeswot-upload-log)
+        continue
+        ;;
+    esac
+    install -Dm755 "$bin" "$pkgdir/usr/bin/$base"
+    ln -s "/usr/bin/$base" "$pkgdir/usr/share/codeswot/bin/$base"
+  done
+
+  install -d "$pkgdir/usr/share/codeswot"
+
+  # Guard direct pacman upgrades from bypassing the codeswotOS update pipeline,
+  # and pause Hyprland live config reloads while settings files are replaced.
+  # Ship hooks with their Exec targets so package skew cannot leave a broken
+  # hook pointing at a missing binary.
+  install -Dm644 default/libalpm/hooks/00-codeswot-update-guard.hook "$pkgdir/usr/share/libalpm/hooks/00-codeswot-update-guard.hook"
+  install -Dm644 default/libalpm/hooks/10-codeswot-hyprland-reload-pause.hook "$pkgdir/usr/share/libalpm/hooks/10-codeswot-hyprland-reload-pause.hook"
+  install -Dm644 default/libalpm/hooks/90-codeswot-hyprland-reload-resume.hook "$pkgdir/usr/share/libalpm/hooks/90-codeswot-hyprland-reload-resume.hook"
+
+  # Target-side setup scripts and package lists used by ISO finalization,
+  # first login, future users, migrations, and reinstall/reset commands.
+  cp -a install "$pkgdir/usr/share/codeswot/"
+
+  # Theme bundles for theme switching.
+  cp -a themes "$pkgdir/usr/share/codeswot/"
+
+  # Versioned migrations runner reads from this tree.
+  cp -a migrations "$pkgdir/usr/share/codeswot/"
+
+  # Fresh users created after install are already on the package layout in this
+  # build, so seed migration markers through /etc/skel. Existing users keep
+  # their own state and still run pending migrations on update.
+  if compgen -G 'migrations/*.sh' >/dev/null; then
+    install -d "$pkgdir/etc/skel/.local/state/codeswot/migrations"
+    for migration in migrations/*.sh; do
+      touch "$pkgdir/etc/skel/.local/state/codeswot/migrations/$(basename "$migration")"
+    done
+  fi
+  # Quickshell desktop shell tree.
+  cp -a shell "$pkgdir/usr/share/codeswot/"
+
+  # Runtime version file.
+  install -Dm644 version "$pkgdir/usr/share/codeswot/version"
+
+  # Omarchy compatibility. Community plugins, scripts and old configs call
+  # omarchy-* commands and read /usr/share/omarchy; point both at codeswotOS.
+  local cmd
+  for cmd in "$pkgdir"/usr/bin/codeswot*; do
+    cmd=$(basename "$cmd")
+    ln -s "$cmd" "$pkgdir/usr/bin/omarchy${cmd#codeswot}"
+  done
+  ln -s codeswot "$pkgdir/usr/share/omarchy"
+}
