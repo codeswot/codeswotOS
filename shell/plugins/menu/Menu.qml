@@ -1226,6 +1226,7 @@ Item {
 
                 Text {
                   text: root.item(root.activeMenu) ? (root.item(root.activeMenu).label || root.activeMenu) : ""
+                  textFormat: Text.PlainText
                   font.family: root.fontFamily
                   font.pixelSize: Style.font.caption
                   font.weight: Font.Medium
@@ -1811,6 +1812,7 @@ Item {
 
               Text {
                 text: root.filterText.length > 0 ? "Clear" : "Back"
+                textFormat: Text.PlainText
                 font.family: root.fontFamily
                 font.pixelSize: Style.font.caption
                 color: Util.alpha(root.foreground, 0.6)
@@ -1853,6 +1855,7 @@ Item {
                   if (cur.kind === "dmenu") return "Select"
                   return "Open"
                 }
+                textFormat: Text.PlainText
                 font.family: root.fontFamily
                 font.pixelSize: Style.font.caption
                 font.weight: Font.DemiBold
