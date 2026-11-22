@@ -40,6 +40,11 @@ gpg --list-secret-keys "$key" >/dev/null 2>&1 || die "signing key $key is not in
 (( dry_run )) || gh auth status >/dev/null 2>&1 || die "run: gh auth login"
 [[ -z $(git status --porcelain) ]] || die "working tree is not clean"
 
+# Never let gh guess the repository: this checkout also has an `upstream`
+# remote (Omarchy), and gh may pick that one.
+export GH_REPO=codeswot/codeswotOS
+[[ $(git remote get-url origin) == *"github.com"*"$GH_REPO"* ]] || die "origin is not $GH_REPO"
+
 arch=$(uname -m)
 tag="$channel-$arch"
 repo_dir="${XDG_CACHE_HOME:-$HOME/.cache}/codeswotOS/repo/$tag"
