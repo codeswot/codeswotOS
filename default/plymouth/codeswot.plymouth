@@ -6,6 +6,6 @@ ModuleName=script
 [script]
 ImageDir=/usr/share/plymouth/themes/codeswot
 ScriptFile=/usr/share/plymouth/themes/codeswot/codeswot.script
-ConsoleLogBackgroundColor=0x1a1b26
+ConsoleLogBackgroundColor=0x111c18
 MonospaceFont=Cantarell 11
 Font=Cantarell 11
