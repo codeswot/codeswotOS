@@ -1,6 +1,6 @@
 # codeswotOS
 
-codeswotOS is Mubarak Ibrahim's personal Arch Linux distribution: Hyprland,
+codeswotOS is a personal Arch Linux distribution: Hyprland,
 the Quickshell desktop, and the {C}odeswot look, delivered as pacman packages
 with snapshot-protected updates.
 
