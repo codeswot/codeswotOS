@@ -1,0 +1,20 @@
+#!/bin/bash
+
+# codeswot:summary=Color a personal fastfetch config with the theme accent
+# codeswot:hidden=true
+
+# The system config in /etc/fastfetch ships the codeswot accent. A copy in
+# ~/.config/fastfetch overrides it, so follow the current theme there.
+
+set -euo pipefail
+
+config="$HOME/.config/fastfetch/config.jsonc"
+[[ -f $config ]] || exit 0
+
+accent=$(codeswot-theme-color accent 2>/dev/null) || exit 0
+[[ $accent =~ ^#[0-9a-fA-F]{6}$ ]] || exit 0
+
+sed -i -E \
+  -e "s/\"1\": \"(#[0-9a-fA-F]{6}|green)\"/\"1\": \"$accent\"/g" \
+  -e "s/\"keyColor\": \"(#[0-9a-fA-F]{6}|green)\"/\"keyColor\": \"$accent\"/g" \
+  "$config"

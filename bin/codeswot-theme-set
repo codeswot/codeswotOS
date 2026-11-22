@@ -332,6 +332,7 @@ post_theme_commands=(
   codeswot-theme-set-vscode
   codeswot-theme-set-obsidian
   codeswot-theme-set-keyboard
+  codeswot-theme-set-fastfetch
 )
 
 if [[ $THEME_HEADLESS != "1" ]]; then
