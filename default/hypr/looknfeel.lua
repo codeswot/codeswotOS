@@ -5,8 +5,8 @@ local inactive_border_color = "rgba(595959aa)"
 
 hl.config({
   general = {
-    gaps_in = 5,
-    gaps_out = 10,
+    gaps_in = 2,
+    gaps_out = { top = 8, right = 3, bottom = 3, left = 3 },
     border_size = 2,
 
     col = {
@@ -20,14 +20,26 @@ hl.config({
   },
 
   decoration = {
-    rounding = 0,
+    rounding = 8,
+
+    -- Slightly translucent windows over a soft blur; unfocused ones recede.
+    active_opacity = 0.95,
+    inactive_opacity = 0.88,
+    dim_inactive = true,
+    dim_strength = 0.15,
 
     shadow = {
       enabled = false,
     },
 
     blur = {
-      enabled = false,
+      enabled = true,
+      size = 10,
+      passes = 3,
+      new_optimizations = true,
+      vibrancy = 0.22,
+      contrast = 1.05,
+      brightness = 0.95,
     },
   },
 
@@ -123,4 +135,12 @@ hl.config({
   binds = {
     hide_special_on_workspace_change = true,
   },
+})
+
+-- Blur behind the translucent codeswotOS menu.
+hl.layer_rule({
+  match = { namespace = "^(codeswot-menu)$" },
+  blur = true,
+  blur_popups = true,
+  ignore_alpha = 0.5,
 })
