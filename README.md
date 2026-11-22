@@ -1,6 +1,6 @@
 # codeswotOS
 
-codeswotOS is a personal Arch Linux distribution: Hyprland,
+codeswotOS is my personal Arch Linux distribution: Hyprland,
 the Quickshell desktop, and the {C}odeswot look, delivered as pacman packages
 with snapshot-protected updates.
 
@@ -89,5 +89,4 @@ still describes Omarchy behavior in places.
 
 ## License
 
-codeswotOS is released under the [MIT License](LICENSE), the same license as
-Omarchy, whose copyright notice it keeps.
+codeswotOS is released under the [MIT License](LICENSE).
