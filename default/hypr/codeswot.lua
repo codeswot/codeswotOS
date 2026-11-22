@@ -12,6 +12,9 @@ if _G.omarchy_default_bindings ~= false then
   require("default.hypr.bindings.utilities")
   require("default.hypr.bindings.voxtype")
   require_optional.module("default.hypr.bindings.applications")
+  if _G.codeswot_mac_bindings ~= false then
+    require("default.hypr.bindings.mac")
+  end
 end
 require("default.hypr.envs")
 require("default.hypr.looknfeel")
