@@ -40,6 +40,11 @@ hl = setmetatable({
       release = opts.release == true,
     })
   end,
+  -- Unbinding a chord releases it, so a later bind on it is a rebind, not a
+  -- collision.
+  unbind = function(keys)
+    table.insert(bindings, { keys = keys, unbind = true })
+  end,
   config = function() end,
   env = function() end,
   monitor = function() end,
@@ -105,7 +110,21 @@ local function signature(binding)
   return table.concat(parts, "+") .. (binding.release and " (release)" or "")
 end
 
+local active = {}
 for _, binding in ipairs(bindings) do
+  if binding.unbind then
+    local released = signature(binding)
+    for index = #active, 1, -1 do
+      if signature(active[index]):gsub(" %(release%)$", "") == released then
+        table.remove(active, index)
+      end
+    end
+  else
+    table.insert(active, binding)
+  end
+end
+
+for _, binding in ipairs(active) do
   print(signature(binding) .. "\t" .. binding.keys .. "\t" .. binding.description)
 end
 LUA
