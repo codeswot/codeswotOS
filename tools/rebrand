@@ -81,6 +81,8 @@ sub rebrand {
     | ${B}Omarchy[A-Z]\w*                      # QML types
     | \w*_omarchy\w* | ${B}omarchy_\w+         # snake_case knobs/functions
     | \blinux-omarchy[\w-]*                  # Omarchy kernels
+    | omarchy(?=\*?\.efi|_linux)                # UKI file names on the ESP
+    | (?<=CUSTOM_UKI_NAME=")omarchy
     )
     | ${B}(omarchy-[a-z0-9-]*[a-z0-9])(?![\w])  # dashed names
     | ${B}omarchy-(?=[^a-z0-9])                 # prefix building, e.g. omarchy-VAR
