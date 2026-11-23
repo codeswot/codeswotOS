@@ -6,8 +6,8 @@
 # alone only to repackage the same source. codeswot and codeswot-settings
 # always carry the same pkgver and _commit; tools/release keeps them in step.
 pkgname='codeswot'
-_commit='15aec685164e67d544d1c9c323a54dd2af977c9e'
-pkgver=2026.11.22
+_commit='a533d557fd9e589738b6c43c57448df2d270980f'
+pkgver=2026.11.23
 pkgrel=1
 pkgdesc='codeswotOS: a personal Arch Linux desktop on Hyprland, forked from Omarchy'
 # The payload is architecture-independent, but the dependency set is not: the
