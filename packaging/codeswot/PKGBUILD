@@ -164,4 +164,8 @@ package() {
     ln -s "$cmd" "$pkgdir/usr/bin/omarchy${cmd#codeswot}"
   done
   ln -s codeswot "$pkgdir/usr/share/omarchy"
+  # codeswot-adopt-omarchy rewrites personal configs with the same rules that
+  # rebranded codeswotOS.
+  install -Dm755 tools/rebrand "$pkgdir/usr/share/codeswot/tools/rebrand"
+  install -Dm644 tools/rebrand.keep-packages "$pkgdir/usr/share/codeswot/tools/rebrand.keep-packages"
 }

@@ -417,6 +417,12 @@ EOF
   # live root config.
   install -d "$pkgdir/usr/share/codeswot/default"
   cp -a default/. "$pkgdir/usr/share/codeswot/default/"
+  # Hyprland configs written under Omarchy load default.hypr.omarchy.
+  # Generated here rather than kept in the tree, where tools/rebrand would
+  # rename it onto codeswot.lua.
+  printf '%s\n' '-- Omarchy name for the codeswotOS defaults.' 'require("default.hypr.codeswot")' \
+    >"$pkgdir/usr/share/codeswot/default/hypr/omarchy.lua"
+
   # Snapper config template used by the install-time `snapper create-config`.
   install -Dm644 default/snapper/root \
     "$pkgdir/etc/snapper/config-templates/codeswot"
