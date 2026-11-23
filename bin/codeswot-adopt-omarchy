@@ -1,0 +1,195 @@
+#!/bin/bash
+
+# codeswot:summary=Move this user's Omarchy setup over to codeswotOS
+# codeswot:args=[--dry-run]
+# codeswot:hidden=true
+
+# Run once per user, as that user, right after the codeswot packages replace
+# Omarchy's. Everything it changes is backed up first, to
+# ~/.local/share/codeswot/adopt-backup-<time>.tar.gz.
+#
+#   1. ~/.config/omarchy, ~/.local/state/omarchy and ~/.cache/omarchy move to
+#      their codeswot names, leaving a link behind for anything that still
+#      uses the old path.
+#   2. Personal configs that name Omarchy commands, paths or modules are
+#      rewritten with the same rules that rebranded codeswotOS itself.
+#   3. Customizations codeswotOS now ships as defaults are retired: cloned
+#      menu/lock plugins, a duplicate codeswot theme, macOS keybindings, and
+#      the hooks that guarded them against Omarchy updates.
+#   4. Enabled omarchy-* user services are re-enabled under their new names.
+#   5. Pending migrations run.
+
+set -euo pipefail
+
+dry_run=0
+[[ ${1:-} == "--dry-run" ]] && dry_run=1
+
+(( EUID != 0 )) || { echo "Run as your user, not root." >&2; exit 1; }
+
+done_marker="$HOME/.local/state/codeswot/adopted-omarchy"
+if [[ -e $done_marker ]]; then
+  echo "This user is already on codeswotOS."
+  exit 0
+fi
+
+# Usually run from the Omarchy session that was live during the switch, which
+# predates CODESWOT_PATH.
+CODESWOT_PATH=${CODESWOT_PATH:-/usr/share/codeswot}
+
+stamp=$(date +%Y%m%d-%H%M%S)
+backup="$HOME/.local/share/codeswot/adopt-backup-$stamp.tar.gz"
+rebrand="$CODESWOT_PATH/tools/rebrand"
+
+step() { echo -e "\e[32m==>\e[0m $*"; }
+run() {
+  if (( dry_run )); then
+    printf '    would run:'
+    printf ' %q' "$@"
+    echo
+  else
+    "$@"
+  fi
+}
+
+# --- Backup ------------------------------------------------------------------
+
+step "Backing up to $backup"
+backup_paths=()
+for path in .config/omarchy .local/state/omarchy .config/hypr .config/systemd/user \
+  .config/ghostty .config/kitty .config/foot .config/alacritty .config/fastfetch \
+  .config/tmux .config/hyprland-preview-share-picker .config/uwsm .config/environment.d; do
+  [[ -e $HOME/$path && ! -L $HOME/$path ]] && backup_paths+=("$path")
+done
+if (( ! dry_run )); then
+  mkdir -p "$(dirname "$backup")"
+  tar -czf "$backup" -C "$HOME" "${backup_paths[@]}"
+fi
+
+# --- 1. Directories ------------------------------------------------------------
+
+for dir in .config .local/state .cache; do
+  old="$HOME/$dir/omarchy"
+  new="$HOME/$dir/codeswot"
+  [[ -d $old && ! -L $old ]] || continue
+  if [[ -e $new ]]; then
+    echo "    $dir/codeswot already exists; leaving $dir/omarchy in place" >&2
+    continue
+  fi
+  step "Moving ~/$dir/omarchy to ~/$dir/codeswot"
+  run mv "$old" "$new"
+  run ln -s codeswot "$old"
+done
+
+config="$HOME/.config/codeswot"
+(( dry_run )) && [[ ! -e $config ]] && config="$HOME/.config/omarchy"
+
+# Move a retired file or directory out of the way; the backup already has it.
+retire() {
+  local path="$1"
+  [[ -e $path || -L $path ]] || return 0
+  echo "    retiring ${path/#$HOME/~}"
+  run rm -rf "$path"
+}
+
+# --- 2. Rewrite personal configs -------------------------------------------------
+
+step "Rewriting Omarchy names in personal configs"
+rewrite_files=()
+while IFS= read -r -d '' file; do
+  rewrite_files+=("$file")
+done < <(find "$HOME/.config/hypr" "$HOME/.config/ghostty" "$HOME/.config/kitty" \
+  "$HOME/.config/foot" "$HOME/.config/alacritty" "$HOME/.config/fastfetch" \
+  "$HOME/.config/tmux" "$HOME/.config/hyprland-preview-share-picker" \
+  "$HOME/.config/uwsm" "$HOME/.config/environment.d" "$config/hooks" \
+  -maxdepth 2 -type f ! -name '*.bak*' ! -name '*.sample' -print0 2>/dev/null)
+
+for file in "${rewrite_files[@]}"; do
+  grep -qiE 'omarchy' "$file" || continue
+  rewritten=$("$rebrand" stream /dev/null <"$file")
+  [[ $rewritten == "$(cat "$file")" ]] && continue
+  echo "    ${file/#$HOME/~}"
+  (( dry_run )) || printf '%s\n' "$rewritten" >"$file"
+done
+
+# --- 3. Retire what codeswotOS now ships ----------------------------------------
+
+step "Retiring customizations that are now codeswotOS defaults"
+
+# The {C}odeswot menu and lock are the built-in omarchy.menu/omarchy.lock now.
+shell_json="$config/shell.json"
+if [[ -f $shell_json ]]; then
+  updated=$(jq '
+    def swap: if type == "object" and .id == "codeswot.menu" then .id = "omarchy.menu" else . end;
+    def first_menu_only:
+      reduce .[] as $e ({seen: false, out: []};
+        if ($e | type) == "object" and $e.id == "omarchy.menu" then
+          if .seen then . else .seen = true | .out += [$e] end
+        else .out += [$e] end) | .out;
+    def is_menu: type == "object" and .id == "omarchy.menu";
+    def drop_menu: map(select(is_menu | not));
+    (.bar.layout // {}) as $layout
+    | .bar.layout = ($layout | with_entries(.value |= map(swap)))
+    | if (.bar.layout.left // [] | any(is_menu)) then
+        .bar.layout.left |= first_menu_only
+        | .bar.layout |= with_entries(if .key == "left" then . else .value |= drop_menu end)
+      else . end
+    | .plugins = ((.plugins // []) | map(select(.id != "codeswot.menu" and .id != "codeswot.lock")))
+    | .disabledPlugins = ((.disabledPlugins // []) - ["omarchy.menu", "omarchy.lock"])
+    | .cloneSourceRestores = ((.cloneSourceRestores // []) - ["codeswot.menu", "codeswot.lock"])
+    | if .disabledPlugins == [] then del(.disabledPlugins) else . end
+    | if .cloneSourceRestores == [] then del(.cloneSourceRestores) else . end
+  ' "$shell_json")
+  if [[ $updated != "$(cat "$shell_json")" ]]; then
+    echo "    shell.json: the menu and lock use the built-in {C}odeswot plugins"
+    (( dry_run )) || printf '%s\n' "$updated" >"$shell_json"
+  fi
+fi
+retire "$config/plugins/codeswot.menu"
+retire "$config/plugins/codeswot.lock"
+
+# The codeswot theme ships with codeswotOS; a personal copy would shadow it.
+retire "$config/themes/{c}odeswot"
+retire "$config/themes/codeswot"
+
+# Hooks that re-applied {C}odeswot branding after Omarchy updates.
+retire "$config/hooks/post-update.d/restore-plymouth.hook"
+retire "$config/hooks/post-update.d/check-cloned-plugins.hook"
+retire "$config/hooks/theme-set.d/update-fastfetch.hook"
+
+# macOS keybindings are a codeswotOS default; keeping a personal copy would
+# bind every chord twice.
+bindings="$HOME/.config/hypr/bindings.lua"
+if [[ -f $bindings ]] && grep -q 'macOS Style Keybindings' "$bindings"; then
+  echo "    hypr/bindings.lua: back to the stock template (macOS keys are default now)"
+  run cp "$CODESWOT_PATH/config/hypr/bindings.lua" "$bindings"
+fi
+
+# --- 4. User services --------------------------------------------------------
+
+step "Re-enabling user services under their codeswot names"
+for link in "$HOME"/.config/systemd/user/*.wants/omarchy-*.service; do
+  [[ -L $link ]] || continue
+  unit=$(basename "$link")
+  new_unit="codeswot-${unit#omarchy-}"
+  run rm -f "$link"
+  if [[ -f ${CODESWOT_USER_UNIT_DIR:-/usr/lib/systemd/user}/$new_unit ]]; then
+    echo "    $unit -> $new_unit"
+    run systemctl --user enable "$new_unit"
+  else
+    echo "    $unit dropped (codeswotOS has no $new_unit)" >&2
+  fi
+done
+run systemctl --user daemon-reload
+
+# --- 5. Migrations -------------------------------------------------------------
+
+step "Running pending migrations"
+run codeswot-migrate
+
+if (( dry_run )); then
+  step "Dry run: nothing changed"
+else
+  mkdir -p "$(dirname "$done_marker")"
+  date -Is >"$done_marker"
+  step "Done. Log out and back in to start codeswotOS. Backup: $backup"
+fi
